@@ -1,19 +1,23 @@
-import type { Metadata } from "next";
-import "./globals.css";
-
-export const metadata: Metadata = {
-  title: "Megal Display",
-  description: "Pantalla profesional de resultados del Uruguay",
-};
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function Header() {
   return (
-    <html lang="es">
-      <body>{children}</body>
-    </html>
+    <header className="h-24 bg-slate-900 border-b border-green-600 flex items-center justify-between px-8">
+
+      <div className="text-4xl font-bold text-green-500">
+        MEGAL DISPLAY
+      </div>
+
+      <div className="text-xl">
+        Resultados Oficiales
+      </div>
+
+      <div className="text-right">
+
+        <div>Hora</div>
+
+        <div>Clima</div>
+
+      </div>
+
+    </header>
   );
 }
