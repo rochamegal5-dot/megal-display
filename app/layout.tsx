@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Megal Display",
-  description: "Resultados en vivo - Quiniela - Tómbola - 5 de Oro",
+  description: "Pantalla profesional de resultados del Uruguay",
 };
 
 export default function RootLayout({
