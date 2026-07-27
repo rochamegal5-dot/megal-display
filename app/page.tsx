@@ -1,19 +1,27 @@
+import Header from "@/components/layout/Header";
+import QuinielaPanel from "@/components/panels/QuinielaPanel";
+import TombolaPanel from "@/components/panels/TombolaPanel";
+import FiveGoldPanel from "@/components/panels/FiveGoldPanel";
+import AdsPanel from "@/components/panels/AdsPanel";
+
 export default function Home() {
   return (
-    <main className="container">
-      <div className="hero">
+    <main className="min-h-screen bg-slate-950 text-white">
 
-        <h1>Megal Display</h1>
+      <Header />
 
-        <h2>
-          Quiniela · Tómbola · 5 de Oro
-        </h2>
+      <div className="grid grid-cols-3 gap-6 p-6">
 
-        <p>
-          Proyecto en construcción
-        </p>
+        <QuinielaPanel />
+
+        <TombolaPanel />
+
+        <FiveGoldPanel />
 
       </div>
+
+      <AdsPanel />
+
     </main>
   );
 }
