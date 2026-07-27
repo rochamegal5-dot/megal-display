@@ -7,21 +7,15 @@ import AdsPanel from "@/components/panels/AdsPanel";
 export default function Home() {
   return (
     <main className="min-h-screen bg-slate-950 text-white">
-
       <Header />
 
       <div className="grid grid-cols-3 gap-6 p-6">
-
         <QuinielaPanel />
-
         <TombolaPanel />
-
         <FiveGoldPanel />
-
       </div>
 
       <AdsPanel />
-
     </main>
   );
 }
