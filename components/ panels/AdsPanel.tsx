@@ -1,9 +1,7 @@
 export default function AdsPanel() {
   return (
-    <footer className="h-40 bg-green-700 flex items-center justify-center text-3xl font-bold">
-
+    <footer className="h-32 rounded-xl bg-green-700 flex items-center justify-center">
       ESPACIO PUBLICITARIO MEGAL ROCHA
-
     </footer>
   );
 }
