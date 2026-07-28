@@ -23,7 +23,7 @@ export default function TombolaPanel() {
 
         <span className="text-8xl">
 
-          🎲
+          🎯
 
         </span>
 
