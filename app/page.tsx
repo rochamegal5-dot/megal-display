@@ -1,27 +1,18 @@
-import Header from "@/components/layout/Header";
-import QuinielaPanel from "@/components/panels/QuinielaPanel";
-import TombolaPanel from "@/components/panels/TombolaPanel";
-import FiveGoldPanel from "@/components/panels/FiveGoldPanel";
-import AdsPanel from "@/components/panels/AdsPanel";
-
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#06111d]">
-
-      <Header />
-
-      <section className="grid grid-cols-3 gap-6 p-6">
-
-        <QuinielaPanel />
-
-        <TombolaPanel />
-
-        <FiveGoldPanel />
-
-      </section>
-
-      <AdsPanel />
-
+    <main
+      style={{
+        background: "black",
+        color: "lime",
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "70px",
+        fontWeight: "bold",
+      }}
+    >
+      MEGAL ROCHA FUNCIONA
     </main>
   );
 }
