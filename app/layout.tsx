@@ -1,23 +1,21 @@
-export default function Header() {
+import Header from "@/components/layout/Header";
+import QuinielaPanel from "@/components/panels/QuinielaPanel";
+import TombolaPanel from "@/components/panels/TombolaPanel";
+import FiveGoldPanel from "@/components/panels/FiveGoldPanel";
+import AdsPanel from "@/components/panels/AdsPanel";
+
+export default function Home() {
   return (
-    <header className="h-24 bg-slate-900 border-b border-green-600 flex items-center justify-between px-8">
+    <main className="min-h-screen bg-slate-950 text-white">
+      <Header />
 
-      <div className="text-4xl font-bold text-green-500">
-        MEGAL DISPLAY
-      </div>
+      <section className="grid grid-cols-3 gap-6 p-6">
+        <QuinielaPanel />
+        <TombolaPanel />
+        <FiveGoldPanel />
+      </section>
 
-      <div className="text-xl">
-        Resultados Oficiales
-      </div>
-
-      <div className="text-right">
-
-        <div>Hora</div>
-
-        <div>Clima</div>
-
-      </div>
-
-    </header>
+      <AdsPanel />
+    </main>
   );
 }
