@@ -7,89 +7,144 @@ interface Resultado {
   numero: string
 }
 
-export default function QuinielaPanel() {
-  const [resultados, setResultados] = useState<Resultado[]>([])
-  const [ultimaActualizacion, setUltimaActualizacion] = useState('--:--')
+interface QuinielaResponse {
+  fecha: string
+  sorteo: {
+    vespertina: Resultado[]
+    nocturna: Resultado[]
+  }
+  ultimaActualizacion: string
+}
 
-  async function cargarResultados() {
+export default function QuinielaPanel() {
+  const [datos, setDatos] = useState<QuinielaResponse | null>(null)
+
+  async function cargar() {
     try {
       const res = await fetch('/api/quiniela', {
         cache: 'no-store',
       })
 
-      const data = await res.json()
+      const json = await res.json()
 
-      setResultados(data)
-
-      setUltimaActualizacion(
-        new Date().toLocaleTimeString('es-UY', {
-          hour: '2-digit',
-          minute: '2-digit',
-        })
-      )
-    } catch (error) {
-      console.error(error)
+      setDatos(json)
+    } catch (err) {
+      console.error(err)
     }
   }
 
   useEffect(() => {
-    cargarResultados()
+    cargar()
 
-    const intervalo = setInterval(cargarResultados, 60000)
+    const id = setInterval(cargar, 60000)
 
-    return () => clearInterval(intervalo)
+    return () => clearInterval(id)
   }, [])
 
-  return (
-    <section className="rounded-2xl overflow-hidden border border-green-600 bg-slate-900 shadow-2xl">
-
-      <div className="bg-green-700 px-5 py-4">
+  if (!datos) {
+    return (
+      <section className="rounded-2xl bg-slate-900 p-8 border border-green-700">
         <h2 className="text-3xl font-black text-white">
           QUINIELA
         </h2>
 
-        <p className="text-green-100">
-          Resultados Oficiales
+        <p className="mt-6 text-gray-300">
+          Cargando resultados...
         </p>
-      </div>
+      </section>
+    )
+  }
 
-      <div className="p-5">
+  return (
+    <section className="rounded-2xl overflow-hidden border border-green-700 shadow-2xl bg-slate-900">
 
-        <table className="w-full">
+      <div className="bg-green-700 px-6 py-4">
 
-          <tbody>
+        <h2 className="text-3xl font-black text-white">
+          QUINIELA URUGUAYA
+        </h2>
 
-            {resultados.map((r) => (
-
-              <tr
-                key={r.puesto}
-                className="border-b border-slate-700"
-              >
-                <td className="py-2 w-16 font-bold text-yellow-400">
-                  {r.puesto}°
-                </td>
-
-                <td className="py-2 text-right text-2xl font-black tracking-widest text-white">
-                  {r.numero}
-                </td>
-
-              </tr>
-
-            ))}
-
-          </tbody>
-
-        </table>
+        <p className="text-green-100">
+          Fecha del sorteo: {datos.fecha}
+        </p>
 
       </div>
 
-      <div className="bg-slate-800 px-5 py-3 text-sm text-slate-300">
+      <div className="grid grid-cols-2">
 
-        Última actualización
+        <div className="border-r border-slate-700">
 
-        <span className="ml-2 text-green-400">
-          {ultimaActualizacion}
-        </span>
+          <div className="bg-slate-800 py-3 text-center text-xl font-bold text-yellow-400">
+            VESPERTINA
+          </div>
+
+          <table className="w-full">
+
+            <tbody>
+
+              {datos.sorteo.vespertina.map((r) => (
+
+                <tr
+                  key={r.puesto}
+                  className="border-b border-slate-700"
+                >
+                  <td className="px-5 py-2 text-yellow-300 font-bold w-16">
+                    {r.puesto}°
+                  </td>
+
+                  <td className="px-5 py-2 text-right text-2xl font-black tracking-widest text-white">
+                    {r.numero}
+                  </td>
+
+                </tr>
+
+              ))}
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+        <div>
+
+          <div className="bg-slate-800 py-3 text-center text-xl font-bold text-cyan-300">
+            NOCTURNA
+          </div>
+
+          <table className="w-full">
+
+            <tbody>
+
+              {datos.sorteo.nocturna.map((r) => (
+
+                <tr
+                  key={r.puesto}
+                  className="border-b border-slate-700"
+                >
+                  <td className="px-5 py-2 text-cyan-300 font-bold w-16">
+                    {r.puesto}°
+                  </td>
+
+                  <td className="px-5 py-2 text-right text-2xl font-black tracking-widest text-white">
+                    {r.numero}
+                  </td>
+
+                </tr>
+
+              ))}
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+      <div className="bg-slate-800 px-6 py-3 text-sm text-green-300">
+
+        Última actualización: {datos.ultimaActualizacion}
 
       </div>
 
