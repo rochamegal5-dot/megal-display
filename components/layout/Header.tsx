@@ -36,71 +36,55 @@ export default function Header() {
   }, [])
 
   return (
-    <header className="bg-gradient-to-r from-green-800 via-green-700 to-green-800 border-b-4 border-yellow-400 shadow-2xl">
+    <header className="header">
 
-      <div className="max-w-[1900px] mx-auto px-8 py-6 flex justify-between items-center">
+      <div className="logo-area">
 
         <div>
 
-          <h1 className="text-5xl font-black tracking-wide text-white">
-            MEGAL ROCHA
-          </h1>
+          <h1>MEGAL ROCHA</h1>
 
-          <p className="text-xl text-green-100 font-semibold">
-            RESULTADOS OFICIALES DEL URUGUAY
-          </p>
+          <h2>RESULTADOS OFICIALES DEL URUGUAY</h2>
 
         </div>
 
-        <div className="flex gap-10">
+      </div>
 
-          <div className="text-center">
+      <div className="status-area">
 
-            <div className="text-sm uppercase text-green-100">
-              Hora
-            </div>
+        <div className="status-box">
 
-            <div className="text-4xl font-black">
-              {hora}
-            </div>
+          <span>HORA</span>
 
-          </div>
+          <strong>{hora}</strong>
 
-          <div className="text-center">
+        </div>
 
-            <div className="text-sm uppercase text-green-100">
-              Fecha
-            </div>
+        <div className="status-box">
 
-            <div className="text-lg font-bold capitalize">
-              {fecha}
-            </div>
+          <span>FECHA</span>
 
-          </div>
+          <strong>{fecha}</strong>
 
-          <div className="text-center">
+        </div>
 
-            <div className="text-sm uppercase text-green-100">
-              Clima
-            </div>
+        <div className="status-box">
 
-            <div className="text-3xl font-black">
-              --°
-            </div>
+          <span>CLIMA</span>
 
-          </div>
+          <strong>--°</strong>
 
-          <div className="text-center">
+        </div>
 
-            <div className="text-sm uppercase text-green-100">
-              Estado
-            </div>
+        <div className="status-box">
 
-            <div className="text-green-300 font-black text-lg">
-              ● ONLINE
-            </div>
+          <span>ESTADO</span>
 
-          </div>
+          <strong className="online">
+
+            ● ONLINE
+
+          </strong>
 
         </div>
 
