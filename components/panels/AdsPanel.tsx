@@ -3,84 +3,117 @@
 import { useEffect, useState } from 'react'
 
 const anuncios = [
+
   {
-    titulo: '🔥 PROMOCIÓN',
-    texto: 'Recarga tu garrafa Megal Rocha',
+    titulo:"🔥 PROMOCIÓN ESPECIAL",
+    texto:"Recargá tu garrafa Megal Rocha",
+    color:"verde"
   },
+
   {
-    titulo: '📞 PEDIDOS',
-    texto: 'WhatsApp 091 434 630',
+    titulo:"🚚 DELIVERY",
+    texto:"Reparto rápido en toda Rocha",
+    color:"azul"
   },
+
   {
-    titulo: '🚚 DELIVERY',
-    texto: 'Reparto rápido en toda Rocha',
+    titulo:"🎁 PROMOCIONES",
+    texto:"Consultá las promociones vigentes",
+    color:"rojo"
   },
+
   {
-    titulo: '🎁 PROMOCIONES',
-    texto: 'Consultá por nuestras ofertas',
-  },
+    titulo:"📞 PEDIDOS",
+    texto:"091 434 630",
+    color:"amarillo"
+  }
+
 ]
 
-export default function AdsPanel() {
-  const [indice, setIndice] = useState(0)
+export default function AdsPanel(){
 
-  useEffect(() => {
-    const id = setInterval(() => {
-      setIndice((i) => (i + 1) % anuncios.length)
-    }, 5000)
+  const[indice,setIndice]=useState(0)
 
-    return () => clearInterval(id)
-  }, [])
+  useEffect(()=>{
 
-  const anuncio = anuncios[indice]
+    const id=setInterval(()=>{
 
-  return (
-    <section className="rounded-2xl overflow-hidden border border-green-700 bg-slate-900 shadow-2xl">
+      setIndice((i)=>(i+1)%anuncios.length)
 
-      <div className="bg-green-700 px-6 py-4">
+    },7000)
 
-        <h2 className="text-3xl font-black">
-          PUBLICIDAD MEGAL ROCHA
+    return()=>clearInterval(id)
+
+  },[])
+
+  const anuncio=anuncios[indice]
+
+  return(
+
+    <section className="ads-panel">
+
+      <div className="ads-left">
+
+        <div className={`ads-card ${anuncio.color}`}>
+
+          <h2>
+
+            {anuncio.titulo}
+
+          </h2>
+
+          <h3>
+
+            {anuncio.texto}
+
+          </h3>
+
+        </div>
+
+      </div>
+
+      <div className="ads-center">
+
+        <div className="video-placeholder">
+
+          🎥
+
+          <span>
+
+            AQUÍ SE REPRODUCIRÁN
+            VIDEOS PROMOCIONALES
+
+          </span>
+
+        </div>
+
+      </div>
+
+      <div className="ads-right">
+
+        <div className="qr">
+
+          QR
+
+        </div>
+
+        <h3>
+
+          ESCANEÁ Y
+          HACÉ TU PEDIDO
+
+        </h3>
+
+        <h2>
+
+          091 434 630
+
         </h2>
 
       </div>
 
-      <div className="grid grid-cols-3">
-
-        {/* Publicidad */}
-
-        <div className="col-span-2 flex flex-col justify-center items-center p-10">
-
-          <h3 className="text-5xl font-black text-yellow-400 mb-6 text-center">
-            {anuncio.titulo}
-          </h3>
-
-          <p className="text-3xl text-white text-center">
-            {anuncio.texto}
-          </p>
-
-        </div>
-
-        {/* QR */}
-
-        <div className="border-l border-slate-700 flex flex-col items-center justify-center p-8">
-
-          <div className="w-48 h-48 bg-white rounded-xl flex items-center justify-center">
-
-            <span className="text-black font-bold">
-              QR
-            </span>
-
-          </div>
-
-          <p className="mt-5 text-xl text-center">
-            Escanee para realizar su pedido
-          </p>
-
-        </div>
-
-      </div>
-
     </section>
+
   )
+
 }
