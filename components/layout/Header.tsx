@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 
 export default function Header() {
-  const [hora, setHora] = useState('--:--:--')
+  const [hora, setHora] = useState('')
   const [fecha, setFecha] = useState('')
 
   useEffect(() => {
@@ -30,78 +30,74 @@ export default function Header() {
 
     actualizar()
 
-    const timer = setInterval(actualizar, 1000)
+    const id = setInterval(actualizar, 1000)
 
-    return () => clearInterval(timer)
+    return () => clearInterval(id)
   }, [])
 
   return (
-    <header className="bg-gradient-to-r from-green-900 via-green-700 to-green-900 shadow-2xl border-b-4 border-yellow-400">
+    <header className="bg-gradient-to-r from-green-800 via-green-700 to-green-800 border-b-4 border-yellow-400 shadow-2xl">
 
-      <div className="max-w-[1900px] mx-auto px-8 py-5">
+      <div className="max-w-[1900px] mx-auto px-8 py-6 flex justify-between items-center">
 
-        <div className="flex justify-between items-center">
+        <div>
 
-          <div>
+          <h1 className="text-5xl font-black tracking-wide text-white">
+            MEGAL ROCHA
+          </h1>
 
-            <h1 className="text-5xl font-black tracking-widest text-white">
-              MEGAL ROCHA
-            </h1>
+          <p className="text-xl text-green-100 font-semibold">
+            RESULTADOS OFICIALES DEL URUGUAY
+          </p>
 
-            <p className="text-green-100 text-xl mt-1">
-              RESULTADOS OFICIALES DEL URUGUAY
-            </p>
+        </div>
+
+        <div className="flex gap-10">
+
+          <div className="text-center">
+
+            <div className="text-sm uppercase text-green-100">
+              Hora
+            </div>
+
+            <div className="text-4xl font-black">
+              {hora}
+            </div>
 
           </div>
 
-          <div className="flex items-center gap-12">
+          <div className="text-center">
 
-            <div className="text-center">
-
-              <div className="text-green-200 uppercase text-sm">
-                Hora
-              </div>
-
-              <div className="text-5xl font-bold text-white">
-                {hora}
-              </div>
-
+            <div className="text-sm uppercase text-green-100">
+              Fecha
             </div>
 
-            <div className="text-center">
-
-              <div className="text-green-200 uppercase text-sm">
-                Fecha
-              </div>
-
-              <div className="text-lg font-semibold text-white max-w-xs">
-                {fecha}
-              </div>
-
+            <div className="text-lg font-bold capitalize">
+              {fecha}
             </div>
 
-            <div className="text-center">
+          </div>
 
-              <div className="text-green-200 uppercase text-sm">
-                Clima
-              </div>
+          <div className="text-center">
 
-              <div className="text-4xl font-bold text-white">
-                --°
-              </div>
-
+            <div className="text-sm uppercase text-green-100">
+              Clima
             </div>
 
-            <div className="text-center">
+            <div className="text-3xl font-black">
+              --°
+            </div>
 
-              <div className="text-green-200 uppercase text-sm">
-                Estado
-              </div>
+          </div>
 
-              <div className="text-green-300 font-bold text-xl">
-                ● ONLINE
-              </div>
+          <div className="text-center">
 
+            <div className="text-sm uppercase text-green-100">
+              Estado
+            </div>
+
+            <div className="text-green-300 font-black text-lg">
+              ● ONLINE
             </div>
 
           </div>
