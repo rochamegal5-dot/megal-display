@@ -28,8 +28,8 @@ export default function TombolaPanel() {
       const json = await res.json()
 
       setDatos(json)
-    } catch (err) {
-      console.error(err)
+    } catch (e) {
+      console.error(e)
     }
   }
 
@@ -43,105 +43,97 @@ export default function TombolaPanel() {
 
   if (!datos) {
     return (
-      <section className="rounded-2xl bg-slate-900 border border-cyan-700 p-8">
-        <h2 className="text-3xl font-black text-white">
-          TÓMBOLA
-        </h2>
+      <section className="panel panel-loading">
+        <h2>TÓMBOLA</h2>
 
-        <p className="mt-5 text-gray-300">
+        <div className="loading-text">
           Cargando resultados...
-        </p>
+        </div>
       </section>
     )
   }
 
   return (
-    <section className="rounded-2xl overflow-hidden border border-cyan-700 bg-slate-900 shadow-2xl">
+    <section className="panel">
 
-      <div className="bg-cyan-700 px-6 py-4">
+      <div className="panel-header casino-red">
 
-        <h2 className="text-3xl font-black text-white">
-          TÓMBOLA
-        </h2>
+        <div>
 
-        <p className="text-cyan-100">
-          Fecha del sorteo: {datos.fecha}
-        </p>
+          <h2>🎯 TÓMBOLA</h2>
+
+          <p>Resultados Oficiales</p>
+
+        </div>
+
+        <div className="fecha-panel">
+
+          {datos.fecha}
+
+        </div>
 
       </div>
 
-      <div className="grid grid-cols-2">
+      <div className="quiniela-grid">
 
-        <div className="border-r border-slate-700">
+        <div>
 
-          <div className="bg-slate-800 py-3 text-center text-xl font-bold text-yellow-400">
-            VESPERTINA
+          <div className="titulo-vespertina">
+            🌞 VESPERTINA
           </div>
 
-          <table className="w-full">
-            <tbody>
+          <div className="bolillas">
 
-              {datos.sorteo.vespertina.map((r) => (
+            {datos.sorteo.vespertina.map((b) => (
 
-                <tr
-                  key={r.puesto}
-                  className="border-b border-slate-700"
-                >
+              <div
+                key={b.puesto}
+                className="bola verde"
+              >
+                {b.numero}
+              </div>
 
-                  <td className="px-4 py-2 font-bold text-yellow-300 w-16">
-                    {r.puesto}°
-                  </td>
+            ))}
 
-                  <td className="px-4 py-2 text-right text-2xl font-black text-white">
-                    {r.numero}
-                  </td>
-
-                </tr>
-
-              ))}
-
-            </tbody>
-          </table>
+          </div>
 
         </div>
 
         <div>
 
-          <div className="bg-slate-800 py-3 text-center text-xl font-bold text-cyan-300">
-            NOCTURNA
+          <div className="titulo-nocturna">
+            🌙 NOCTURNA
           </div>
 
-          <table className="w-full">
-            <tbody>
+          <div className="bolillas">
 
-              {datos.sorteo.nocturna.map((r) => (
+            {datos.sorteo.nocturna.map((b) => (
 
-                <tr
-                  key={r.puesto}
-                  className="border-b border-slate-700"
-                >
+              <div
+                key={b.puesto}
+                className="bola roja"
+              >
+                {b.numero}
+              </div>
 
-                  <td className="px-4 py-2 font-bold text-cyan-300 w-16">
-                    {r.puesto}°
-                  </td>
+            ))}
 
-                  <td className="px-4 py-2 text-right text-2xl font-black text-white">
-                    {r.numero}
-                  </td>
-
-                </tr>
-
-              ))}
-
-            </tbody>
-          </table>
+          </div>
 
         </div>
 
       </div>
 
-      <div className="bg-slate-800 px-6 py-3 text-green-300 text-sm">
-        Última actualización: {datos.ultimaActualizacion}
+      <div className="panel-footer">
+
+        🟢 Actualizado
+
+        <strong>
+
+          {datos.ultimaActualizacion}
+
+        </strong>
+
       </div>
 
     </section>
