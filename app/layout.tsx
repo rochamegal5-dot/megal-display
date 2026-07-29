@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
 import "./globals.css";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Megal Display",
-  description: "Pantalla profesional de resultados oficiales del Uruguay",
+  title: "MEGAL DISPLAY",
+  description: "Resultados Oficiales del Uruguay",
 };
 
 export default function RootLayout({
@@ -13,9 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className="bg-slate-950 text-white antialiased">
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
