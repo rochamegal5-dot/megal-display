@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 
-function generarResultados() {
+interface Resultado {
+  puesto: number;
+  numero: string;
+}
+
+function generarResultados(): Resultado[] {
   return Array.from({ length: 20 }, (_, i) => ({
     puesto: i + 1,
     numero: String(Math.floor(Math.random() * 100)).padStart(2, "0"),
@@ -21,5 +26,7 @@ export async function GET() {
       minute: "2-digit",
       second: "2-digit",
     }),
+
+    estado: "OK",
   });
 }
