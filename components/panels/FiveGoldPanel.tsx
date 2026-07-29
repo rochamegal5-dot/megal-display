@@ -1,172 +1,141 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-
-interface FiveGoldResponse {
-  fecha: string
-  sorteo: {
-    bolillas: number[]
-    bolillaExtra: number
-    revancha: number[]
-    pozoDeOro: string
-    pozoRevancha: string
-    pozoDePlata: string
-  }
-  ultimaActualizacion: string
+.cinco-container{
+padding:25px;
 }
 
-export default function FiveGoldPanel() {
-  const [datos, setDatos] = useState<FiveGoldResponse | null>(null)
+.titulo-bolillas{
+text-align:center;
+font-size:22px;
+font-weight:900;
+margin:15px 0;
+color:#ffd700;
+}
 
-  async function cargar() {
-    try {
-      const res = await fetch('/api/cinco-de-oro', {
-        cache: 'no-store',
-      })
+.bolillas-oro{
+display:flex;
+justify-content:center;
+gap:18px;
+margin-bottom:20px;
+}
 
-      const json = await res.json()
+.bola-oro{
 
-      setDatos(json)
-    } catch (error) {
-      console.error(error)
-    }
-  }
+width:72px;
+height:72px;
 
-  useEffect(() => {
-    cargar()
+border-radius:50%;
 
-    const id = setInterval(cargar, 60000)
+display:flex;
+align-items:center;
+justify-content:center;
 
-    return () => clearInterval(id)
-  }, [])
+font-size:28px;
+font-weight:900;
 
-  if (!datos) {
-    return (
-      <section className="rounded-2xl bg-slate-900 border border-yellow-600 p-8">
-        <h2 className="text-3xl font-black text-white">
-          5 DE ORO
-        </h2>
+color:#111;
 
-        <p className="mt-5 text-gray-300">
-          Cargando resultados...
-        </p>
-      </section>
-    )
-  }
+background:radial-gradient(circle,#fff7b3,#ffd700,#d4a400);
 
-  return (
-    <section className="rounded-2xl overflow-hidden border border-yellow-500 bg-slate-900 shadow-2xl">
+box-shadow:0 0 25px rgba(255,215,0,.8);
 
-      <div className="bg-yellow-500 px-6 py-4">
+}
 
-        <h2 className="text-4xl font-black text-black">
-          5 DE ORO
-        </h2>
+.bola-plata{
 
-        <p className="text-black font-semibold">
-          Fecha del sorteo: {datos.fecha}
-        </p>
+width:64px;
+height:64px;
 
-      </div>
+border-radius:50%;
 
-      <div className="p-8">
+display:flex;
+align-items:center;
+justify-content:center;
 
-        <h3 className="text-xl font-bold text-yellow-400 mb-4">
-          Bolillas
-        </h3>
+font-size:26px;
+font-weight:900;
 
-        <div className="flex gap-4 justify-center mb-8">
+background:linear-gradient(#ffffff,#d6d6d6);
 
-          {datos.sorteo.bolillas.map((n) => (
+color:#111;
 
-            <div
-              key={n}
-              className="w-20 h-20 rounded-full bg-yellow-400 text-black flex items-center justify-center text-3xl font-black shadow-xl"
-            >
-              {n}
-            </div>
+}
 
-          ))}
+.bola-extra{
 
-        </div>
+width:90px;
+height:90px;
 
-        <div className="text-center mb-8">
+border-radius:50%;
 
-          <span className="text-lg text-gray-300">
-            Bolilla Extra
-          </span>
+display:flex;
+align-items:center;
+justify-content:center;
 
-          <div className="mt-3 inline-flex w-20 h-20 rounded-full bg-red-600 text-white items-center justify-center text-3xl font-black">
-            {datos.sorteo.bolillaExtra}
-          </div>
+font-size:34px;
+font-weight:900;
 
-        </div>
+margin:auto;
 
-        <h3 className="text-xl font-bold text-green-400 mb-4">
-          Revancha
-        </h3>
+background:linear-gradient(#ff5252,#c40000);
 
-        <div className="flex gap-4 justify-center mb-8">
+color:white;
 
-          {datos.sorteo.revancha.map((n) => (
+box-shadow:0 0 35px red;
 
-            <div
-              key={n}
-              className="w-16 h-16 rounded-full bg-green-500 text-white flex items-center justify-center text-2xl font-bold"
-            >
-              {n}
-            </div>
+}
 
-          ))}
+.extra-area{
 
-        </div>
+margin:20px 0 30px;
+text-align:center;
 
-        <div className="grid grid-cols-3 gap-6">
+}
 
-          <div className="bg-slate-800 rounded-xl p-5 text-center">
+.extra-label{
 
-            <p className="text-gray-400">
-              Pozo de Oro
-            </p>
+font-size:20px;
+font-weight:bold;
+margin-bottom:12px;
 
-            <p className="text-2xl font-black text-yellow-400">
-              {datos.sorteo.pozoDeOro}
-            </p>
+}
 
-          </div>
+.pozos{
 
-          <div className="bg-slate-800 rounded-xl p-5 text-center">
+display:grid;
+grid-template-columns:1fr;
+gap:12px;
 
-            <p className="text-gray-400">
-              Revancha
-            </p>
+margin-top:25px;
 
-            <p className="text-2xl font-black text-green-400">
-              {datos.sorteo.pozoRevancha}
-            </p>
+}
 
-          </div>
+.pozo{
 
-          <div className="bg-slate-800 rounded-xl p-5 text-center">
+padding:15px;
 
-            <p className="text-gray-400">
-              Pozo de Plata
-            </p>
+border-radius:15px;
 
-            <p className="text-2xl font-black text-cyan-400">
-              {datos.sorteo.pozoDePlata}
-            </p>
+background:#111;
 
-          </div>
+border:2px solid gold;
 
-        </div>
+text-align:center;
 
-      </div>
+}
 
-      <div className="bg-slate-800 px-6 py-3 text-sm text-green-300">
-        Última actualización: {datos.ultimaActualizacion}
-      </div>
+.pozo span{
 
-    </section>
-  )
+display:block;
+font-size:15px;
+color:#ccc;
+
+}
+
+.pozo strong{
+
+display:block;
+margin-top:6px;
+
+font-size:30px;
+color:#00ff7f;
+
 }
