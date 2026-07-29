@@ -28,8 +28,8 @@ export default function QuinielaPanel() {
       const json = await res.json()
 
       setDatos(json)
-    } catch (err) {
-      console.error(err)
+    } catch (e) {
+      console.error(e)
     }
   }
 
@@ -43,108 +43,120 @@ export default function QuinielaPanel() {
 
   if (!datos) {
     return (
-      <section className="rounded-2xl bg-slate-900 p-8 border border-green-700">
-        <h2 className="text-3xl font-black text-white">
-          QUINIELA
-        </h2>
+      <section className="panel panel-loading">
+        <h2>QUINIELA</h2>
 
-        <p className="mt-6 text-gray-300">
+        <div className="loading-text">
           Cargando resultados...
-        </p>
+        </div>
       </section>
     )
   }
 
   return (
-    <section className="rounded-2xl overflow-hidden border border-green-700 shadow-2xl bg-slate-900">
+    <section className="panel">
 
-      <div className="bg-green-700 px-6 py-4">
-
-        <h2 className="text-3xl font-black text-white">
-          QUINIELA URUGUAYA
-        </h2>
-
-        <p className="text-green-100">
-          Fecha del sorteo: {datos.fecha}
-        </p>
-
-      </div>
-
-      <div className="grid grid-cols-2">
-
-        <div className="border-r border-slate-700">
-
-          <div className="bg-slate-800 py-3 text-center text-xl font-bold text-yellow-400">
-            VESPERTINA
-          </div>
-
-          <table className="w-full">
-
-            <tbody>
-
-              {datos.sorteo.vespertina.map((r) => (
-
-                <tr
-                  key={r.puesto}
-                  className="border-b border-slate-700"
-                >
-                  <td className="px-5 py-2 text-yellow-300 font-bold w-16">
-                    {r.puesto}°
-                  </td>
-
-                  <td className="px-5 py-2 text-right text-2xl font-black tracking-widest text-white">
-                    {r.numero}
-                  </td>
-
-                </tr>
-
-              ))}
-
-            </tbody>
-
-          </table>
-
-        </div>
+      <div className="panel-header casino-green">
 
         <div>
 
-          <div className="bg-slate-800 py-3 text-center text-xl font-bold text-cyan-300">
-            NOCTURNA
-          </div>
+          <h2>🎰 QUINIELA</h2>
 
-          <table className="w-full">
+          <p>Resultados Oficiales</p>
 
-            <tbody>
+        </div>
 
-              {datos.sorteo.nocturna.map((r) => (
+        <div className="fecha-panel">
 
-                <tr
-                  key={r.puesto}
-                  className="border-b border-slate-700"
-                >
-                  <td className="px-5 py-2 text-cyan-300 font-bold w-16">
-                    {r.puesto}°
-                  </td>
-
-                  <td className="px-5 py-2 text-right text-2xl font-black tracking-widest text-white">
-                    {r.numero}
-                  </td>
-
-                </tr>
-
-              ))}
-
-            </tbody>
-
-          </table>
+          {datos.fecha}
 
         </div>
 
       </div>
 
-      <div className="bg-slate-800 px-6 py-3 text-sm text-green-300">
+      <div className="quiniela-grid">
 
-        Última actualización: {datos.ultimaActualizacion}
+        <div className="sorteo">
+
+          <div className="titulo-vespertina">
+
+            🌞 VESPERTINA
+
+          </div>
+
+          {datos.sorteo.vespertina.map((r) => (
+
+            <div
+              key={r.puesto}
+              className="fila"
+            >
+
+              <div className="puesto">
+
+                {r.puesto}
+
+              </div>
+
+              <div className="numero amarillo">
+
+                {r.numero}
+
+              </div>
+
+            </div>
+
+          ))}
+
+        </div>
+
+        <div className="sorteo">
+
+          <div className="titulo-nocturna">
+
+            🌙 NOCTURNA
+
+          </div>
+
+          {datos.sorteo.nocturna.map((r) => (
+
+            <div
+              key={r.puesto}
+              className="fila"
+            >
+
+              <div className="puesto">
+
+                {r.puesto}
+
+              </div>
+
+              <div className="numero cyan">
+
+                {r.numero}
+
+              </div>
+
+            </div>
+
+          ))}
+
+        </div>
+
+      </div>
+
+      <div className="panel-footer">
+
+        <span>
+
+          🟢 Actualizado:
+
+        </span>
+
+        <strong>
+
+          {datos.ultimaActualizacion}
+
+        </strong>
 
       </div>
 
