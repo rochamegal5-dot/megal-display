@@ -1,34 +1,32 @@
-import { API } from "@/lib/constants";
+export async function request<T>(url: string): Promise<T> {
 
-import type { QuinielaResponse } from "@/types/quiniela";
-import type { TombolaResponse } from "@/types/tombola";
-import type { FiveGoldResponse } from "@/types/fiveGold";
-import type { WeatherResponse } from "@/types/weather";
-
-async function request<T>(url: string): Promise<T> {
   const res = await fetch(url, {
-    cache: "no-store",
-  });
+    cache: 'no-store',
+  })
 
   if (!res.ok) {
-    throw new Error(`Error ${res.status}`);
+    throw new Error(`Error ${res.status}`)
   }
 
-  return res.json();
+  return res.json()
 }
 
-export function obtenerQuiniela() {
-  return request<QuinielaResponse>(API.QUINIELA);
-}
+export const Api = {
 
-export function obtenerTombola() {
-  return request<TombolaResponse>(API.TOMBOLA);
-}
+  quiniela() {
+    return request('/api/quiniela')
+  },
 
-export function obtenerCincoDeOro() {
-  return request<FiveGoldResponse>(API.FIVE_GOLD);
-}
+  tombola() {
+    return request('/api/tombola')
+  },
 
-export function obtenerClima() {
-  return request<WeatherResponse>(API.WEATHER);
+  fiveGold() {
+    return request('/api/cinco-de-oro')
+  },
+
+  weather() {
+    return request('/api/weather')
+  },
+
 }
