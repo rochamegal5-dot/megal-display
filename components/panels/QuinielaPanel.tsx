@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react'
 
-interface Resultado {
-  puesto: number
-  numero: string
-}
+import {
+  getQuiniela,
+  QuinielaResponse,
+} from '@/services/quiniela'
 
 interface QuinielaResponse {
   fecha: string
@@ -18,22 +18,16 @@ interface QuinielaResponse {
 
 export default function QuinielaPanel() {
   const [datos, setDatos] = useState<QuinielaResponse | null>(null)
+async function cargar() {
+  try {
+    const datos = await getQuiniela()
 
-  async function cargar() {
-    try {
-      const res = await fetch('/api/quiniela', {
-        cache: 'no-store',
-      })
-
-      const json = await res.json()
-
-      setDatos(json)
-    } catch (e) {
-      console.error(e)
-    }
+    setDatos(datos)
+  } catch (err) {
+    console.error(err)
   }
-
-  useEffect(() => {
+}
+   useEffect(() => {
     cargar()
 
     const id = setInterval(cargar, 60000)
