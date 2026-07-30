@@ -1,32 +1,26 @@
-export async function request<T>(url: string): Promise<T> {
+import axios from "axios";
+import { API_CONFIG } from "./config";
 
-  const res = await fetch(url, {
-    cache: 'no-store',
-  })
+export async function request<T>(
+  url: string
+): Promise<T> {
+  let ultimoError: unknown;
 
-  if (!res.ok) {
-    throw new Error(`Error ${res.status}`)
+  for (let intento = 0; intento < API_CONFIG.retries; intento++) {
+    try {
+      const response = await axios.get<T>(url, {
+        timeout: API_CONFIG.timeout,
+
+        headers: {
+          "User-Agent": API_CONFIG.userAgent,
+        },
+      });
+
+      return response.data;
+    } catch (e) {
+      ultimoError = e;
+    }
   }
 
-  return res.json()
-}
-
-export const Api = {
-
-  quiniela() {
-    return request('/api/quiniela')
-  },
-
-  tombola() {
-    return request('/api/tombola')
-  },
-
-  fiveGold() {
-    return request('/api/cinco-de-oro')
-  },
-
-  weather() {
-    return request('/api/weather')
-  },
-
+  throw ultimoError;
 }
