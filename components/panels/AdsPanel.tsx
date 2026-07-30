@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import MediaPlayer from './MediaPlayer'
 
 const anuncios = [
 
@@ -52,42 +53,29 @@ export default function AdsPanel(){
 
     <section className="ads-panel">
 
+      {/* PANEL IZQUIERDO */}
+
       <div className="ads-left">
 
         <div className={`ads-card ${anuncio.color}`}>
 
-          <h2>
+          <h2>{anuncio.titulo}</h2>
 
-            {anuncio.titulo}
-
-          </h2>
-
-          <h3>
-
-            {anuncio.texto}
-
-          </h3>
+          <h3>{anuncio.texto}</h3>
 
         </div>
 
       </div>
+
+      {/* VIDEO / IMÁGENES */}
 
       <div className="ads-center">
 
-        <div className="video-placeholder">
-
-          🎥
-
-          <span>
-
-            AQUÍ SE REPRODUCIRÁN
-            VIDEOS PROMOCIONALES
-
-          </span>
-
-        </div>
+        <MediaPlayer />
 
       </div>
+
+      {/* PANEL DERECHO */}
 
       <div className="ads-right">
 
@@ -99,8 +87,7 @@ export default function AdsPanel(){
 
         <h3>
 
-          ESCANEÁ Y
-          HACÉ TU PEDIDO
+          ESCANEÁ Y HACÉ TU PEDIDO
 
         </h3>
 
