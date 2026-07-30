@@ -1,51 +1,65 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
-const mensajes = [
+export default function Ticker() {
 
-  '🎰 RESULTADOS OFICIALES DEL URUGUAY',
+  const [hora, setHora] = useState('')
 
-  '🔥 MEGAL ROCHA - DISTRIBUIDOR OFICIAL',
+  useEffect(() => {
 
-  '📞 PEDIDOS 091 434 630',
+    const actualizar = () => {
+      setHora(
+        new Date().toLocaleTimeString('es-UY', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        })
+      )
+    }
 
-  '🚚 DELIVERY EN TODA LA CIUDAD DE ROCHA',
+    actualizar()
 
-  '🎁 PROMOCIONES TODOS LOS DÍAS',
+    const id = setInterval(actualizar, 1000)
 
-  '🏆 5 DE ORO • QUINIELA • TÓMBOLA',
+    return () => clearInterval(id)
 
-  '📺 RESULTADOS ACTUALIZADOS AUTOMÁTICAMENTE'
+  }, [])
 
-]
+  const texto = useMemo(() => [
 
-export default function Ticker(){
+    '🎰 RESULTADOS OFICIALES DEL URUGUAY',
 
-const [texto,setTexto]=useState('')
+    '🔥 MEGAL ROCHA - DISTRIBUIDOR OFICIAL',
 
-useEffect(()=>{
+    '📞 PEDIDOS 091 434 630',
 
-setTexto(mensajes.join('      •      '))
+    '🚚 DELIVERY EN TODA ROCHA',
 
-},[])
+    '🎁 PROMOCIONES TODOS LOS DÍAS',
 
-return(
+    '🏆 QUINIELA • TÓMBOLA • 5 DE ORO',
 
-<div className="ticker">
+    `🕒 ${hora}`,
 
-<div className="ticker-track">
+  ].join('        ✦        '), [hora])
 
-{texto}
+  return (
 
-&nbsp;&nbsp;&nbsp;&nbsp;
+    <div className="ticker">
 
-{texto}
+      <div className="ticker-track">
 
-</div>
+        {texto}
 
-</div>
+        &nbsp;&nbsp;&nbsp;&nbsp;
 
-)
+        {texto}
+
+      </div>
+
+    </div>
+
+  )
 
 }
