@@ -4,6 +4,7 @@ import QuinielaPanel from "@/components/panels/QuinielaPanel";
 import TombolaPanel from "@/components/panels/TombolaPanel";
 import FiveGoldPanel from "@/components/panels/FiveGoldPanel";
 import AdsPanel from "@/components/panels/AdsPanel";
+import Ticker from "@/components/layout/Ticker";
 
 export default function Home() {
   return (
@@ -34,6 +35,7 @@ export default function Home() {
       </section>
 
       <AdsPanel />
+      <Ticker />
 
     </main>
   );
