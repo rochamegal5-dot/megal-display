@@ -45,32 +45,38 @@ export default function Header() {
     return () => clearInterval(reloj)
   }, [])
 
-  useEffect(() => {
-    async function cargarClima() {
-      try {
-        const res = await fetch('/api/weather', {
-          cache: 'no-store',
-        })
+useEffect(() => {
 
-        if (!res.ok) return
+  async function cargarClima() {
 
-        const data = await res.json()
+    try {
 
-        setWeather({
-          temperatura: `${data.temperatura}°`,
-          ciudad: data.ciudad,
-        })
-      } catch (e) {
-        console.error(e)
-      }
+      const clima = await getWeather()
+
+      setWeather({
+
+        temperatura: `${clima.temperatura}°`,
+
+        ciudad: clima.ciudad,
+
+      })
+
+    } catch (e) {
+
+      console.error(e)
+
     }
 
-    cargarClima()
+  }
 
-    const id = setInterval(cargarClima, 600000)
+  cargarClima()
 
-    return () => clearInterval(id)
-  }, [])
+  const id = setInterval(cargarClima, 600000)
+
+  return () => clearInterval(id)
+
+}, [])
+
 
   return (
     <header className="header">
