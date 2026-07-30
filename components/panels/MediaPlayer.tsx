@@ -12,8 +12,13 @@ export default function MediaPlayer() {
 
   const [playlist, setPlaylist] = useState<MediaItem[]>([])
   const [index, setIndex] = useState(0)
+  const [loading, setLoading] = useState(true)
 
   const timer = useRef<NodeJS.Timeout | null>(null)
+
+  function siguiente() {
+    setIndex((i) => (i + 1) % playlist.length)
+  }
 
   useEffect(() => {
 
@@ -25,13 +30,19 @@ export default function MediaPlayer() {
           cache: 'no-store',
         })
 
+        if (!res.ok) throw new Error('Playlist no encontrada')
+
         const data = await res.json()
 
         setPlaylist(data)
 
       } catch (e) {
 
-        console.error('No se pudo cargar playlist', e)
+        console.error(e)
+
+      } finally {
+
+        setLoading(false)
 
       }
 
@@ -53,7 +64,7 @@ export default function MediaPlayer() {
 
         siguiente()
 
-      }, actual.duration || 8000)
+      }, actual.duration ?? 8000)
 
     }
 
@@ -63,11 +74,19 @@ export default function MediaPlayer() {
 
     }
 
-  }, [index, playlist])
+  }, [playlist, index])
 
-  function siguiente() {
+  if (loading) {
 
-    setIndex((i) => (i + 1) % playlist.length)
+    return (
+
+      <div className="media-player loading-media">
+
+        Cargando publicidad...
+
+      </div>
+
+    )
 
   }
 
@@ -77,7 +96,7 @@ export default function MediaPlayer() {
 
       <div className="media-player loading-media">
 
-        Cargando publicidad...
+        No hay contenido publicitario
 
       </div>
 
@@ -109,7 +128,11 @@ export default function MediaPlayer() {
 
           playsInline
 
+          controls={false}
+
           onEnded={siguiente}
+
+          onError={siguiente}
 
         />
 
@@ -122,6 +145,8 @@ export default function MediaPlayer() {
           src={actual.src}
 
           alt="Publicidad"
+
+          onError={siguiente}
 
         />
 
