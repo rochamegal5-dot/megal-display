@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { getWeather } from '@/services/weather'
 
 interface WeatherData {
   temperatura: string
