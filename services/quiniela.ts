@@ -1,20 +1,34 @@
-import { cargarPagina } from "./scraper";
+import { request } from "./api";
+import { getCache, setCache } from "./cache";
+import { API_CONFIG } from "./config";
 
-const URL =
-  "https://www.loteria.gub.uy/ver_resultados.php";
+export interface Resultado {
+  puesto: number;
+  numero: string;
+}
 
-export async function obtenerQuiniela() {
-
-  const $ = await cargarPagina(URL);
-
-  // Aquí iremos leyendo la estructura real
-  // del HTML oficial.
-
-  console.log($.html());
-
-  return {
-    fecha: "",
-    vespertina: [],
-    nocturna: [],
+export interface QuinielaResponse {
+  fecha: string;
+  sorteo: {
+    vespertina: Resultado[];
+    nocturna: Resultado[];
   };
+  ultimaActualizacion: string;
+  estado?: string;
+}
+
+const CACHE_KEY = "quiniela";
+
+export async function getQuiniela(): Promise<QuinielaResponse> {
+  const cache = getCache<QuinielaResponse>(CACHE_KEY);
+
+  if (cache) return cache;
+
+  const data = await request<QuinielaResponse>(
+    "/api/quiniela"
+  );
+
+  setCache(CACHE_KEY, data, API_CONFIG.cacheTime);
+
+  return data;
 }
