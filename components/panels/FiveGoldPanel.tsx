@@ -2,223 +2,133 @@
 
 import { useEffect, useState } from 'react'
 
-import Card from '@/components/ui/Card'
-import Ball from '@/components/ui/Ball'
-import Jackpot from '@/components/ui/Jackpot'
-import PanelTitle from '@/components/ui/PanelTitle'
+import {
+  getFiveGold,
+  FiveGoldResponse,
+} from '@/services/fiveGold'
 
-interface FiveGoldResponse {
+export default function FiveGoldPanel() {
 
-  fecha:string
+  const [datos, setDatos] =
+    useState<FiveGoldResponse | null>(null)
 
-  sorteo:{
+  async function cargar() {
 
-    bolillas:number[]
+    try {
 
-    bolillaExtra:number
+      const data = await getFiveGold()
 
-    revancha:number[]
+      setDatos(data)
 
-    pozoDeOro:string
+    } catch (e) {
 
-    pozoRevancha:string
+      console.error(e)
 
-    pozoDePlata:string
+    }
 
   }
 
-  ultimaActualizacion:string
+  useEffect(() => {
 
-}
+    cargar()
 
-export default function FiveGoldPanel(){
+    const id = setInterval(cargar, 60000)
 
-const[datos,setDatos]=useState<FiveGoldResponse|null>(null)
+    return () => clearInterval(id)
 
-async function cargar(){
+  }, [])
 
-try{
+  if (!datos) {
 
-const res=await fetch('/api/cinco-de-oro',{
+    return (
 
-cache:'no-store'
+      <section className="panel">
 
-})
+        <h2>5 DE ORO</h2>
 
-const json=await res.json()
+        <p>Cargando...</p>
 
-setDatos(json)
+      </section>
 
-}catch(e){
+    )
 
-console.error(e)
+  }
 
-}
+  return (
 
-}
+    <section className="panel">
 
-useEffect(()=>{
+      <div className="panel-title">
 
-cargar()
+        5 DE ORO
 
-const id=setInterval(cargar,60000)
+      </div>
 
-return()=>clearInterval(id)
+      <div className="panel-date">
 
-},[])
+        {datos.fecha}
 
-if(!datos){
+      </div>
 
-return(
+      <div className="fivegold">
 
-<Card>
+        {datos.sorteo.numeros.map((n) => (
 
-<div className="loading">
+          <div
+            className="bola"
+            key={n}
+          >
 
-Cargando 5 de Oro...
+            {n}
 
-</div>
+          </div>
 
-</Card>
+        ))}
 
-)
+      </div>
 
-}
+      <div className="extra">
 
-return(
+        EXTRA
 
-<Card>
+        <span>
 
-<PanelTitle
+          {datos.sorteo.bolillaExtra}
 
-icon="🏆"
+        </span>
 
-title="5 DE ORO"
+      </div>
 
-subtitle={`Sorteo ${datos.fecha}`}
+      <div className="pozos">
 
-color="casino-gold"
+        <p>
 
-/>
+          Pozo de Oro
 
-<div className="cinco-container">
+          <strong>
 
-<div className="titulo-bolillas">
+            {datos.sorteo.pozoDeOro}
 
-BOLILLAS GANADORAS
+          </strong>
 
-</div>
+        </p>
 
-<div className="bolillas-oro">
+        <p>
 
-{datos.sorteo.bolillas.map((n,i)=>(
+          Revancha
 
-<Ball
+          <strong>
 
-key={i}
+            {datos.sorteo.pozoRevancha}
 
-numero={String(n).padStart(2,'0')}
+          </strong>
 
-color="gold"
+        </p>
 
-size="lg"
+      </div>
 
-/>
+    </section>
 
-))}
-
-</div>
-
-<div className="extra-area">
-
-<div className="extra-label">
-
-EXTRA
-
-</div>
-
-<Ball
-
-numero={String(datos.sorteo.bolillaExtra).padStart(2,'0')}
-
-color="red"
-
-size="lg"
-
-/>
-
-</div>
-
-<div className="titulo-bolillas">
-
-REVANCHA
-
-</div>
-
-<div className="bolillas-oro">
-
-{datos.sorteo.revancha.map((n,i)=>(
-
-<Ball
-
-key={i}
-
-numero={String(n).padStart(2,'0')}
-
-color="silver"
-
-size="md"
-
-/>
-
-))}
-
-</div>
-
-<div className="pozos">
-
-<Jackpot
-
-title="POZO DE ORO"
-
-amount={datos.sorteo.pozoDeOro}
-
-/>
-
-<Jackpot
-
-title="REVANCHA"
-
-amount={datos.sorteo.pozoRevancha}
-
-/>
-
-<Jackpot
-
-title="POZO DE PLATA"
-
-amount={datos.sorteo.pozoDePlata}
-
-/>
-
-</div>
-
-</div>
-
-<div className="panel-footer">
-
-🟢 Última actualización
-
-<strong>
-
-{datos.ultimaActualizacion}
-
-</strong>
-
-</div>
-
-</Card>
-
-)
+  )
 
 }
