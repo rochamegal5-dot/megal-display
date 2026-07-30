@@ -2,34 +2,21 @@
 
 import { useEffect, useState } from 'react'
 
-interface Resultado {
-  puesto: number
-  numero: string
-}
-
-interface TombolaResponse {
-  fecha: string
-  sorteo: {
-    vespertina: Resultado[]
-    nocturna: Resultado[]
-  }
-  ultimaActualizacion: string
-}
+import {
+  getTombola,
+  TombolaResponse,
+} from '@/services/tombola'
 
 export default function TombolaPanel() {
+
   const [datos, setDatos] = useState<TombolaResponse | null>(null)
 
   async function cargar() {
     try {
-      const res = await fetch('/api/tombola', {
-        cache: 'no-store',
-      })
-
-      const json = await res.json()
-
-      setDatos(json)
-    } catch (e) {
-      console.error(e)
+      const data = await getTombola()
+      setDatos(data)
+    } catch (err) {
+      console.error(err)
     }
   }
 
@@ -43,12 +30,9 @@ export default function TombolaPanel() {
 
   if (!datos) {
     return (
-      <section className="panel panel-loading">
+      <section className="panel">
         <h2>TÓMBOLA</h2>
-
-        <div className="loading-text">
-          Cargando resultados...
-        </div>
+        <p>Cargando resultados...</p>
       </section>
     )
   }
@@ -56,83 +40,57 @@ export default function TombolaPanel() {
   return (
     <section className="panel">
 
-      <div className="panel-header casino-red">
-
-        <div>
-
-          <h2>🎯 TÓMBOLA</h2>
-
-          <p>Resultados Oficiales</p>
-
-        </div>
-
-        <div className="fecha-panel">
-
-          {datos.fecha}
-
-        </div>
-
+      <div className="panel-title">
+        TÓMBOLA URUGUAYA
       </div>
 
-      <div className="quiniela-grid">
-
-        <div>
-
-          <div className="titulo-vespertina">
-            🌞 VESPERTINA
-          </div>
-
-          <div className="bolillas">
-
-            {datos.sorteo.vespertina.map((b) => (
-
-              <div
-                key={b.puesto}
-                className="bola verde"
-              >
-                {b.numero}
-              </div>
-
-            ))}
-
-          </div>
-
-        </div>
-
-        <div>
-
-          <div className="titulo-nocturna">
-            🌙 NOCTURNA
-          </div>
-
-          <div className="bolillas">
-
-            {datos.sorteo.nocturna.map((b) => (
-
-              <div
-                key={b.puesto}
-                className="bola roja"
-              >
-                {b.numero}
-              </div>
-
-            ))}
-
-          </div>
-
-        </div>
-
+      <div className="panel-date">
+        {datos.fecha}
       </div>
 
-      <div className="panel-footer">
+      <div className="panel-grid">
 
-        🟢 Actualizado
+        <div>
 
-        <strong>
+          <h3>VESPERTINA</h3>
 
-          {datos.ultimaActualizacion}
+          {datos.sorteo.vespertina.map((r) => (
 
-        </strong>
+            <div
+              className="resultado"
+              key={r.puesto}
+            >
+
+              <span>{r.puesto}°</span>
+
+              <strong>{r.numero}</strong>
+
+            </div>
+
+          ))}
+
+        </div>
+
+        <div>
+
+          <h3>NOCTURNA</h3>
+
+          {datos.sorteo.nocturna.map((r) => (
+
+            <div
+              className="resultado"
+              key={r.puesto}
+            >
+
+              <span>{r.puesto}°</span>
+
+              <strong>{r.numero}</strong>
+
+            </div>
+
+          ))}
+
+        </div>
 
       </div>
 
