@@ -1,141 +1,224 @@
-.cinco-container{
-padding:25px;
-}
+'use client'
 
-.titulo-bolillas{
-text-align:center;
-font-size:22px;
-font-weight:900;
-margin:15px 0;
-color:#ffd700;
-}
+import { useEffect, useState } from 'react'
 
-.bolillas-oro{
-display:flex;
-justify-content:center;
-gap:18px;
-margin-bottom:20px;
-}
+import Card from '@/components/ui/Card'
+import Ball from '@/components/ui/Ball'
+import Jackpot from '@/components/ui/Jackpot'
+import PanelTitle from '@/components/ui/PanelTitle'
 
-.bola-oro{
+interface FiveGoldResponse {
 
-width:72px;
-height:72px;
+  fecha:string
 
-border-radius:50%;
+  sorteo:{
 
-display:flex;
-align-items:center;
-justify-content:center;
+    bolillas:number[]
 
-font-size:28px;
-font-weight:900;
+    bolillaExtra:number
 
-color:#111;
+    revancha:number[]
 
-background:radial-gradient(circle,#fff7b3,#ffd700,#d4a400);
+    pozoDeOro:string
 
-box-shadow:0 0 25px rgba(255,215,0,.8);
+    pozoRevancha:string
+
+    pozoDePlata:string
+
+  }
+
+  ultimaActualizacion:string
 
 }
 
-.bola-plata{
+export default function FiveGoldPanel(){
 
-width:64px;
-height:64px;
+const[datos,setDatos]=useState<FiveGoldResponse|null>(null)
 
-border-radius:50%;
+async function cargar(){
 
-display:flex;
-align-items:center;
-justify-content:center;
+try{
 
-font-size:26px;
-font-weight:900;
+const res=await fetch('/api/cinco-de-oro',{
 
-background:linear-gradient(#ffffff,#d6d6d6);
+cache:'no-store'
 
-color:#111;
+})
 
-}
+const json=await res.json()
 
-.bola-extra{
+setDatos(json)
 
-width:90px;
-height:90px;
+}catch(e){
 
-border-radius:50%;
-
-display:flex;
-align-items:center;
-justify-content:center;
-
-font-size:34px;
-font-weight:900;
-
-margin:auto;
-
-background:linear-gradient(#ff5252,#c40000);
-
-color:white;
-
-box-shadow:0 0 35px red;
+console.error(e)
 
 }
 
-.extra-area{
+}
 
-margin:20px 0 30px;
-text-align:center;
+useEffect(()=>{
+
+cargar()
+
+const id=setInterval(cargar,60000)
+
+return()=>clearInterval(id)
+
+},[])
+
+if(!datos){
+
+return(
+
+<Card>
+
+<div className="loading">
+
+Cargando 5 de Oro...
+
+</div>
+
+</Card>
+
+)
 
 }
 
-.extra-label{
+return(
 
-font-size:20px;
-font-weight:bold;
-margin-bottom:12px;
+<Card>
 
-}
+<PanelTitle
 
-.pozos{
+icon="🏆"
 
-display:grid;
-grid-template-columns:1fr;
-gap:12px;
+title="5 DE ORO"
 
-margin-top:25px;
+subtitle={`Sorteo ${datos.fecha}`}
 
-}
+color="casino-gold"
 
-.pozo{
+/>
 
-padding:15px;
+<div className="cinco-container">
 
-border-radius:15px;
+<div className="titulo-bolillas">
 
-background:#111;
+BOLILLAS GANADORAS
 
-border:2px solid gold;
+</div>
 
-text-align:center;
+<div className="bolillas-oro">
 
-}
+{datos.sorteo.bolillas.map((n,i)=>(
 
-.pozo span{
+<Ball
 
-display:block;
-font-size:15px;
-color:#ccc;
+key={i}
 
-}
+numero={String(n).padStart(2,'0')}
 
-.pozo strong{
+color="gold"
 
-display:block;
-margin-top:6px;
+size="lg"
 
-font-size:30px;
-color:#00ff7f;
+/>
+
+))}
+
+</div>
+
+<div className="extra-area">
+
+<div className="extra-label">
+
+EXTRA
+
+</div>
+
+<Ball
+
+numero={String(datos.sorteo.bolillaExtra).padStart(2,'0')}
+
+color="red"
+
+size="lg"
+
+/>
+
+</div>
+
+<div className="titulo-bolillas">
+
+REVANCHA
+
+</div>
+
+<div className="bolillas-oro">
+
+{datos.sorteo.revancha.map((n,i)=>(
+
+<Ball
+
+key={i}
+
+numero={String(n).padStart(2,'0')}
+
+color="silver"
+
+size="md"
+
+/>
+
+))}
+
+</div>
+
+<div className="pozos">
+
+<Jackpot
+
+title="POZO DE ORO"
+
+amount={datos.sorteo.pozoDeOro}
+
+/>
+
+<Jackpot
+
+title="REVANCHA"
+
+amount={datos.sorteo.pozoRevancha}
+
+/>
+
+<Jackpot
+
+title="POZO DE PLATA"
+
+amount={datos.sorteo.pozoDePlata}
+
+/>
+
+</div>
+
+</div>
+
+<div className="panel-footer">
+
+🟢 Última actualización
+
+<strong>
+
+{datos.ultimaActualizacion}
+
+</strong>
+
+</div>
+
+</Card>
+
+)
 
 }
