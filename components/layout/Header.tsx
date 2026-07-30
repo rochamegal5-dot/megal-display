@@ -2,12 +2,21 @@
 
 import { useEffect, useState } from 'react'
 
+interface WeatherData {
+  temperatura: string
+  ciudad: string
+}
+
 export default function Header() {
   const [hora, setHora] = useState('')
   const [fecha, setFecha] = useState('')
+  const [weather, setWeather] = useState<WeatherData>({
+    temperatura: '--°',
+    ciudad: 'Rocha',
+  })
 
   useEffect(() => {
-    const actualizar = () => {
+    const actualizarHora = () => {
       const ahora = new Date()
 
       setHora(
@@ -28,9 +37,36 @@ export default function Header() {
       )
     }
 
-    actualizar()
+    actualizarHora()
 
-    const id = setInterval(actualizar, 1000)
+    const reloj = setInterval(actualizarHora, 1000)
+
+    return () => clearInterval(reloj)
+  }, [])
+
+  useEffect(() => {
+    async function cargarClima() {
+      try {
+        const res = await fetch('/api/weather', {
+          cache: 'no-store',
+        })
+
+        if (!res.ok) return
+
+        const data = await res.json()
+
+        setWeather({
+          temperatura: `${data.temperatura}°`,
+          ciudad: data.ciudad,
+        })
+      } catch (e) {
+        console.error(e)
+      }
+    }
+
+    cargarClima()
+
+    const id = setInterval(cargarClima, 600000)
 
     return () => clearInterval(id)
   }, [])
@@ -54,7 +90,7 @@ export default function Header() {
 
         <div className="status-box">
 
-          <span>HORA</span>
+          <span>🕒 HORA</span>
 
           <strong>{hora}</strong>
 
@@ -62,7 +98,7 @@ export default function Header() {
 
         <div className="status-box">
 
-          <span>FECHA</span>
+          <span>📅 FECHA</span>
 
           <strong>{fecha}</strong>
 
@@ -70,15 +106,21 @@ export default function Header() {
 
         <div className="status-box">
 
-          <span>CLIMA</span>
+          <span>🌤 CLIMA</span>
 
-          <strong>--°</strong>
+          <strong>
+
+            {weather.temperatura}
+
+          </strong>
+
+          <small>{weather.ciudad}</small>
 
         </div>
 
         <div className="status-box">
 
-          <span>ESTADO</span>
+          <span>🟢 SISTEMA</span>
 
           <strong className="online">
 
