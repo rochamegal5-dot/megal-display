@@ -1603,3 +1603,18 @@ transform:translateX(-100%);
 }
 
 }
+.status-box small{
+
+display:block;
+
+margin-top:6px;
+
+font-size:14px;
+
+font-weight:600;
+
+color:#d6d6d6;
+
+letter-spacing:1px;
+
+}
