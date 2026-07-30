@@ -15,26 +15,21 @@ export default function Home() {
       <section className="principal">
 
         <div className="columna">
-
           <QuinielaPanel />
-
         </div>
 
         <div className="columna">
-
           <TombolaPanel />
-
         </div>
 
         <div className="columna">
-
           <FiveGoldPanel />
-
         </div>
 
       </section>
 
       <AdsPanel />
+
       <Ticker />
 
     </main>
