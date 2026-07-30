@@ -25,10 +25,10 @@ export default function MediaPlayer() {
     async function cargarPlaylist() {
 
       try {
-
-        const res = await fetch('/media/playlist.json', {
-          cache: 'no-store',
-        })
+const res = await fetch('/api/media', {
+  cache: 'no-store',
+})
+       
 
         if (!res.ok) throw new Error('Playlist no encontrada')
 
