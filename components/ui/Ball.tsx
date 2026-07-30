@@ -2,23 +2,18 @@ interface Props{
 
 numero:string
 
-color?:
-"gold"|
-"silver"|
-"green"|
-"red"
+color?:"gold"|"silver"|"green"|"red"
 
-size?:
-"sm"|
-"md"|
-"lg"
+size?:"sm"|"md"|"lg"
 
 }
 
 export default function Ball({
 
 numero,
+
 color="gold",
+
 size="md"
 
 }:Props){
