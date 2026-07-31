@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { getWeather } from '@/services/weather'
+import NextDraw from "./NextDraw";
+import LastUpdate from "./LastUpdate";
+import SystemStatus from "./SystemStatus";
 
 interface WeatherData {
   temperatura: string
@@ -138,7 +141,15 @@ useEffect(() => {
         </div>
 
       </div>
+<div className="header-extra">
 
+  <NextDraw />
+
+  <LastUpdate />
+
+  <SystemStatus />
+
+</div>
     </header>
   )
 }
