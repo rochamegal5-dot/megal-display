@@ -1,155 +1,63 @@
-'use client'
+return (
 
-import { useEffect, useState } from 'react'
-import { getWeather } from '@/services/weather'
-import NextDraw from "./NextDraw";
-import LastUpdate from "./LastUpdate";
-import SystemStatus from "./SystemStatus";
+<header className="header">
 
-interface WeatherData {
-  temperatura: string
-  ciudad: string
-}
+    <div className="header-top">
 
-export default function Header() {
-  const [hora, setHora] = useState('')
-  const [fecha, setFecha] = useState('')
-  const [weather, setWeather] = useState<WeatherData>({
-    temperatura: '--°',
-    ciudad: 'Rocha',
-  })
+        <div className="brand">
 
-  useEffect(() => {
-    const actualizarHora = () => {
-      const ahora = new Date()
+            <h1>MEGAL ROCHA</h1>
 
-      setHora(
-        ahora.toLocaleTimeString('es-UY', {
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-        })
-      )
-
-      setFecha(
-        ahora.toLocaleDateString('es-UY', {
-          weekday: 'long',
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric',
-        })
-      )
-    }
-
-    actualizarHora()
-
-    const reloj = setInterval(actualizarHora, 1000)
-
-    return () => clearInterval(reloj)
-  }, [])
-
-useEffect(() => {
-
-  async function cargarClima() {
-
-    try {
-
-      const clima = await getWeather()
-
-      setWeather({
-
-        temperatura: `${clima.temperatura}°`,
-
-        ciudad: clima.ciudad,
-
-      })
-
-    } catch (e) {
-
-      console.error(e)
-
-    }
-
-  }
-
-  cargarClima()
-
-  const id = setInterval(cargarClima, 600000)
-
-  return () => clearInterval(id)
-
-}, [])
-
-
-  return (
-    <header className="header">
-
-      <div className="logo-area">
-
-        <div>
-
-          <h1>MEGAL ROCHA</h1>
-
-          <h2>RESULTADOS OFICIALES DEL URUGUAY</h2>
+            <p>RESULTADOS OFICIALES DEL URUGUAY</p>
 
         </div>
 
-      </div>
+        <div className="header-status">
 
-      <div className="status-area">
+            <div className="status-box">
 
-        <div className="status-box">
+                <span>🕘</span>
 
-          <span>🕒 HORA</span>
+                <strong>{hora}</strong>
 
-          <strong>{hora}</strong>
+            </div>
 
-        </div>
+            <div className="status-box">
 
-        <div className="status-box">
+                <span>📅</span>
 
-          <span>📅 FECHA</span>
+                <strong>{fecha}</strong>
 
-          <strong>{fecha}</strong>
+            </div>
 
-        </div>
+            <div className="status-box">
 
-        <div className="status-box">
+                <span>🌤</span>
 
-          <span>🌤 CLIMA</span>
+                <strong>14°C</strong>
 
-          <strong>
+            </div>
 
-            {weather.temperatura}
+            <div className="status-box online">
 
-          </strong>
+                ● ONLINE
 
-          <small>{weather.ciudad}</small>
-
-        </div>
-
-        <div className="status-box">
-
-          <span>🟢 SISTEMA</span>
-
-          <strong className="online">
-
-            ● ONLINE
-
-          </strong>
+            </div>
 
         </div>
 
-      </div>
-<div className="header-extra">
+    </div>
 
-  <NextDraw />
+    <div className="header-bottom">
 
-  <LastUpdate />
+        <NextDraw />
 
-  <SystemStatus />
+        <LastUpdate />
 
-</div>
-    </header>
-  )
-}
+        <SystemStatus />
+
+    </div>
+
+</header>
+
+)
