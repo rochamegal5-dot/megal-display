@@ -1,18 +1,11 @@
-import axios from "axios";
+import {loadDNLQ} from "@/services/providers/dnlq";
 
-const URL =
-  "https://www.loteria.gub.uy/movil/24_25_resultados.php";
+import {parseDNLQ} from "@/services/parsers/dnlqParser";
 
-export async function loadDNLQ(): Promise<string> {
-  const { data } = await axios.get(URL, {
-    timeout: 15000,
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) MegalDisplay/2.0",
-      Accept:
-        "text/html,application/xhtml+xml",
-    },
-  });
+export async function getResultados(){
 
-  return String(data);
+const html=await loadDNLQ();
+
+return parseDNLQ(html);
+
 }
