@@ -1,11 +1,16 @@
-import {loadDNLQ} from "@/services/providers/dnlq";
+import axios from "axios";
+import * as cheerio from "cheerio";
 
-import {parseDNLQ} from "@/services/parsers/dnlqParser";
+const URL = "https://www.loteria.gub.uy/ver_resultados.php";
 
-export async function getResultados(){
+export async function getDocument() {
+  const { data } = await axios.get(URL, {
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+    },
+    timeout: 15000,
+  });
 
-const html=await loadDNLQ();
-
-return parseDNLQ(html);
-
+  return cheerio.load(data);
 }
