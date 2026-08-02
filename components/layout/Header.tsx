@@ -1,54 +1,106 @@
-return (
+'use client'
 
-<header className="header">
+import { useEffect, useState } from 'react'
 
-    <div className="header-top">
+import NextDraw from './NextDraw'
+import LastUpdate from './LastUpdate'
+import SystemStatus from './SystemStatus'
+
+export default function Header() {
+
+  const [hora, setHora] = useState('')
+  const [fecha, setFecha] = useState('')
+
+  useEffect(() => {
+
+    const actualizar = () => {
+
+      const ahora = new Date()
+
+      setHora(
+        ahora.toLocaleTimeString('es-UY', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        })
+      )
+
+      setFecha(
+        ahora.toLocaleDateString('es-UY', {
+          weekday: 'long',
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric'
+        })
+      )
+
+    }
+
+    actualizar()
+
+    const id = setInterval(actualizar, 1000)
+
+    return () => clearInterval(id)
+
+  }, [])
+
+  return (
+
+    <header className="header">
+
+      <div className="header-top">
 
         <div className="brand">
 
-            <h1>MEGAL ROCHA</h1>
+          <h1>MEGAL ROCHA</h1>
 
-            <p>RESULTADOS OFICIALES DEL URUGUAY</p>
+          <p>RESULTADOS OFICIALES DEL URUGUAY</p>
 
         </div>
 
         <div className="header-status">
 
-            <div className="status-box">
+          <div className="status-box">
 
-                <span>🕘</span>
+            <span>HORA</span>
 
-                <strong>{hora}</strong>
+            <strong>{hora}</strong>
 
-            </div>
+          </div>
 
-            <div className="status-box">
+          <div className="status-box">
 
-                <span>📅</span>
+            <span>FECHA</span>
 
-                <strong>{fecha}</strong>
+            <strong>{fecha}</strong>
 
-            </div>
+          </div>
 
-            <div className="status-box">
+          <div className="status-box">
 
-                <span>🌤</span>
+            <span>CLIMA</span>
 
-                <strong>14°C</strong>
+            <strong>--°</strong>
 
-            </div>
+          </div>
 
-            <div className="status-box online">
+          <div className="status-box">
 
-                ● ONLINE
+            <span>ESTADO</span>
 
-            </div>
+            <strong className="online">
+
+              ● ONLINE
+
+            </strong>
+
+          </div>
 
         </div>
 
-    </div>
+      </div>
 
-    <div className="header-bottom">
+      <div className="header-bottom">
 
         <NextDraw />
 
@@ -56,119 +108,10 @@ return (
 
         <SystemStatus />
 
-    </div>
-    .header{
+      </div>
 
-    width:100%;
+    </header>
 
-    background:linear-gradient(180deg,#101010,#1d1d1d);
-
-    border-bottom:3px solid gold;
-
-    padding:18px 30px;
-
-    box-shadow:0 5px 20px rgba(0,0,0,.5);
+  )
 
 }
-
-.header-top{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-}
-
-.brand h1{
-
-    font-size:42px;
-
-    color:#FFD700;
-
-    margin:0;
-
-    letter-spacing:2px;
-
-    text-shadow:0 0 18px rgba(255,215,0,.7);
-
-}
-
-.brand p{
-
-    color:white;
-
-    font-size:18px;
-
-    margin-top:6px;
-
-    opacity:.85;
-
-}
-
-.header-status{
-
-    display:flex;
-
-    gap:14px;
-
-}
-
-.status-box{
-
-    background:#202020;
-
-    border:1px solid #444;
-
-    border-radius:12px;
-
-    padding:14px 20px;
-
-    min-width:130px;
-
-    text-align:center;
-
-}
-
-.status-box strong{
-
-    display:block;
-
-    font-size:24px;
-
-    color:white;
-
-}
-
-.status-box span{
-
-    color:#FFD700;
-
-    font-size:14px;
-
-}
-
-.online{
-
-    color:#00ff7f;
-
-    font-weight:bold;
-
-}
-
-.header-bottom{
-
-    display:flex;
-
-    justify-content:center;
-
-    gap:25px;
-
-    margin-top:18px;
-
-}
-
-</header>
-
-)
