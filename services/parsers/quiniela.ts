@@ -11,51 +11,62 @@ export interface QuinielaResponse {
   nocturna: Premio[];
 }
 
-function leerBloque($: CheerioAPI, titulo: string): Premio[] {
+function obtenerBloque($:CheerioAPI, indice:number):Premio[]{
 
-  const premios: Premio[] = [];
+    const bloques=$("img[src*='logo_quiniela']");
 
-  const logo = $(`img[src*="${titulo}"]`).first();
+    if(bloques.length<=indice)return[];
 
-  if (!logo.length) return premios;
+    const logo=bloques.eq(indice);
 
-  const tabla = logo.closest("table").nextAll("table").first();
+    const premios:Premio[]=[];
 
-  tabla.find(".text_azul_3").each((i, el) => {
+    let nodo=logo.parent();
 
-    const numero = $(el).text().trim();
+    while(nodo.length){
 
-    if (/^\d{3}$/.test(numero)) {
+        nodo.find(".text_azul_3").each((_,el)=>{
 
-      premios.push({
+            const numero=$(el).text().trim();
 
-        puesto: premios.length + 1,
+            if(/^\d{3}$/.test(numero)){
 
-        numero
+                premios.push({
 
-      });
+                    puesto:premios.length+1,
+
+                    numero
+
+                });
+
+            }
+
+        });
+
+        if(premios.length>=20)break;
+
+        nodo=nodo.next();
 
     }
 
-  });
-
-  return premios.slice(0,20);
+    return premios.slice(0,20);
 
 }
 
-export function parseQuiniela($: CheerioAPI): QuinielaResponse {
+export function parseQuiniela($:CheerioAPI):QuinielaResponse{
 
-  const fecha =
-    $("body").text().match(/\d{2}\/\d{2}\/\d{4}/)?.[0] ?? "";
+    const fecha=$("body")
+    .text()
+    .match(/\d{2}\/\d{2}\/\d{4}/)?.[0]||"";
 
-  return {
+    return{
 
-    fecha,
+        fecha,
 
-    vespertina: leerBloque($, "logo_quiniela"),
+        vespertina:obtenerBloque($,0),
 
-    nocturna: leerBloque($, "logo_quiniela"),
+        nocturna:obtenerBloque($,1)
 
-  };
+    };
 
 }
