@@ -1,104 +1,61 @@
 import type { CheerioAPI } from "cheerio";
 
 export interface Premio {
+  puesto: number;
+  numero: string;
+}
 
-    puesto:number;
+export interface QuinielaResponse {
+  fecha: string;
+  vespertina: Premio[];
+  nocturna: Premio[];
+}
 
-    numero:string;
+function leerBloque($: CheerioAPI, titulo: string): Premio[] {
+
+  const premios: Premio[] = [];
+
+  const logo = $(`img[src*="${titulo}"]`).first();
+
+  if (!logo.length) return premios;
+
+  const tabla = logo.closest("table").nextAll("table").first();
+
+  tabla.find(".text_azul_3").each((i, el) => {
+
+    const numero = $(el).text().trim();
+
+    if (/^\d{3}$/.test(numero)) {
+
+      premios.push({
+
+        puesto: premios.length + 1,
+
+        numero
+
+      });
+
+    }
+
+  });
+
+  return premios.slice(0,20);
 
 }
 
-export interface QuinielaResponse{
+export function parseQuiniela($: CheerioAPI): QuinielaResponse {
 
-    fecha:string;
+  const fecha =
+    $("body").text().match(/\d{2}\/\d{2}\/\d{4}/)?.[0] ?? "";
 
-    vespertina:Premio[];
+  return {
 
-    nocturna:Premio[];
+    fecha,
 
-}
+    vespertina: leerBloque($, "logo_quiniela"),
 
-function leerTabla(tab:any){
+    nocturna: leerBloque($, "logo_quiniela"),
 
-    const resultados:Premio[]=[];
-
-    tab.find("tr").each((_:number,row:any)=>{
-
-        const td=tab(row).find("td");
-
-        if(td.length>=2){
-
-            const puesto=parseInt(tab(td[0]).text().trim());
-
-            const numero=tab(td[1]).text().trim();
-
-            if(!isNaN(puesto)){
-
-                resultados.push({
-
-                    puesto,
-
-                    numero
-
-                });
-
-            }
-
-        }
-
-    });
-
-    return resultados;
-
-}
-
-export function parseQuiniela($:CheerioAPI):QuinielaResponse{
-
-    const tablas=$("table");
-
-    let fecha="";
-
-    $("body")
-        .text()
-        .split("\n")
-        .forEach(line=>{
-
-            if(/\d{2}\/\d{2}\/\d{4}/.test(line)){
-
-                fecha=line.trim();
-
-            }
-
-        });
-
-    const respuesta:QuinielaResponse={
-
-        fecha,
-
-        vespertina:[],
-
-        nocturna:[]
-
-    };
-
-    tablas.each((i,el)=>{
-
-        const texto=$(el).text().toUpperCase();
-
-        if(texto.includes("VESPERTINA")){
-
-            respuesta.vespertina=leerTabla($(el));
-
-        }
-
-        if(texto.includes("NOCTURNA")){
-
-            respuesta.nocturna=leerTabla($(el));
-
-        }
-
-    });
-
-    return respuesta;
+  };
 
 }
