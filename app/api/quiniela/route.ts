@@ -1,24 +1,31 @@
 import { NextResponse } from "next/server";
-import { getDocument } from "@/services/providers/dnlq";
-import { parseQuiniela } from "@/services/parsers/quiniela";
+import { getResultados } from "@/services/providers/provider";
 
-export async function GET(){
+export async function GET() {
 
-    try{
+  try {
 
-        const $=await getDocument();
+    const datos = await getResultados();
 
-        return NextResponse.json(
-            parseQuiniela($)
-        );
+    return NextResponse.json({
+      fecha: datos.fecha,
+      vespertina: datos.quiniela.vespertina,
+      nocturna: datos.quiniela.nocturna,
+      ultimaActualizacion: new Date(),
+      estado: "OK"
+    });
 
-    }catch(e){
+  } catch (error) {
 
-        return NextResponse.json(
-            {error:"No se pudo leer la DNLQ"},
-            {status:500}
-        );
+    return NextResponse.json(
+      {
+        error: "No se pudieron obtener los resultados."
+      },
+      {
+        status: 500
+      }
+    );
 
-    }
+  }
 
 }
