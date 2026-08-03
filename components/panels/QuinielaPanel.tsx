@@ -2,158 +2,134 @@
 
 import { useEffect, useState } from 'react'
 
-import {
-  getQuiniela,
-  QuinielaResponse,
-} from '@/services/quiniela'
+interface Premio {
 
-interface QuinielaResponse {
-  fecha: string
-  sorteo: {
-    vespertina: Resultado[]
-    nocturna: Resultado[]
-  }
-  ultimaActualizacion: string
+  puesto:number
+
+  numero:string
+
 }
 
-export default function QuinielaPanel() {
-  const [datos, setDatos] = useState<QuinielaResponse | null>(null)
-async function cargar() {
-  try {
-    const datos = await getQuiniela()
+interface Datos {
 
-    setDatos(datos)
-  } catch (err) {
-    console.error(err)
-  }
+  fecha:string
+
+  vespertina:Premio[]
+
+  nocturna:Premio[]
+
 }
-   useEffect(() => {
+
+export default function QuinielaPanel(){
+
+  const [datos,setDatos]=useState<Datos|null>(null)
+
+  useEffect(()=>{
+
+    async function cargar(){
+
+      try{
+
+        const r=await fetch('/api/quiniela',{
+
+          cache:'no-store'
+
+        })
+
+        const d=await r.json()
+
+        setDatos(d)
+
+      }
+
+      catch(e){
+
+        console.error(e)
+
+      }
+
+    }
+
     cargar()
 
-    const id = setInterval(cargar, 60000)
+    const id=setInterval(cargar,60000)
 
-    return () => clearInterval(id)
-  }, [])
+    return()=>clearInterval(id)
 
-  if (!datos) {
-    return (
-      <section className="panel panel-loading">
-        <h2>QUINIELA</h2>
+  },[])
 
-        <div className="loading-text">
-          Cargando resultados...
-        </div>
-      </section>
-    )
-  }
+  return(
 
-  return (
-    <section className="panel">
+    <div className="panel fade">
 
-      <div className="panel-header casino-green">
+      <div className="panel-title">
 
-        <div>
-
-          <h2>🎰 QUINIELA</h2>
-
-          <p>Resultados Oficiales</p>
-
-        </div>
-
-        <div className="fecha-panel">
-
-          {datos.fecha}
-
-        </div>
+        🎰 QUINIELA
 
       </div>
 
-      <div className="quiniela-grid">
+      <div className="panel-body">
 
-        <div className="sorteo">
+        {
 
-          <div className="titulo-vespertina">
+          !datos
 
-            🌞 VESPERTINA
+          ?
 
-          </div>
+          <h2>Cargando...</h2>
 
-          {datos.sorteo.vespertina.map((r) => (
+          :
 
-            <div
-              key={r.puesto}
-              className="fila"
-            >
+          <>
 
-              <div className="puesto">
+            <h3 style={{marginBottom:10}}>
 
-                {r.puesto}
+              Vespertina
 
-              </div>
+            </h3>
 
-              <div className="numero amarillo">
+            <div className="result-list">
 
-                {r.numero}
+              {
 
-              </div>
+                datos.vespertina.map((p)=>(
+
+                  <div
+
+                    key={p.puesto}
+
+                    className="result-item"
+
+                  >
+
+                    <div className="result-position">
+
+                      {p.puesto}
+
+                    </div>
+
+                    <div className="result-number">
+
+                      {p.numero}
+
+                    </div>
+
+                  </div>
+
+                ))
+
+              }
 
             </div>
 
-          ))}
+          </>
 
-        </div>
-
-        <div className="sorteo">
-
-          <div className="titulo-nocturna">
-
-            🌙 NOCTURNA
-
-          </div>
-
-          {datos.sorteo.nocturna.map((r) => (
-
-            <div
-              key={r.puesto}
-              className="fila"
-            >
-
-              <div className="puesto">
-
-                {r.puesto}
-
-              </div>
-
-              <div className="numero cyan">
-
-                {r.numero}
-
-              </div>
-
-            </div>
-
-          ))}
-
-        </div>
+        }
 
       </div>
 
-      <div className="panel-footer">
+    </div>
 
-        <span>
-
-          🟢 Actualizado:
-
-        </span>
-
-        <strong>
-
-          {datos.ultimaActualizacion}
-
-        </strong>
-
-      </div>
-
-    </section>
   )
+
 }
