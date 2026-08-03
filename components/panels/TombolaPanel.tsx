@@ -1,99 +1,105 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect,useState } from 'react'
 
-import {
-  getTombola,
-  TombolaResponse,
-} from '@/services/tombola'
+interface Numero{
 
-export default function TombolaPanel() {
+puesto:number
 
-  const [datos, setDatos] = useState<TombolaResponse | null>(null)
+numero:string
 
-  async function cargar() {
-    try {
-      const data = await getTombola()
-      setDatos(data)
-    } catch (err) {
-      console.error(err)
-    }
-  }
+}
 
-  useEffect(() => {
-    cargar()
+interface Datos{
 
-    const id = setInterval(cargar, 60000)
+fecha:string
 
-    return () => clearInterval(id)
-  }, [])
+vespertina:Numero[]
 
-  if (!datos) {
-    return (
-      <section className="panel">
-        <h2>TÓMBOLA</h2>
-        <p>Cargando resultados...</p>
-      </section>
-    )
-  }
+nocturna:Numero[]
 
-  return (
-    <section className="panel">
+}
 
-      <div className="panel-title">
-        TÓMBOLA URUGUAYA
-      </div>
+export default function TombolaPanel(){
 
-      <div className="panel-date">
-        {datos.fecha}
-      </div>
+const[datos,setDatos]=useState<Datos|null>(null)
 
-      <div className="panel-grid">
+useEffect(()=>{
 
-        <div>
+async function cargar(){
 
-          <h3>VESPERTINA</h3>
+const r=await fetch('/api/tombola',{cache:'no-store'})
 
-          {datos.sorteo.vespertina.map((r) => (
+const d=await r.json()
 
-            <div
-              className="resultado"
-              key={r.puesto}
-            >
+setDatos(d)
 
-              <span>{r.puesto}°</span>
+}
 
-              <strong>{r.numero}</strong>
+cargar()
 
-            </div>
+const id=setInterval(cargar,60000)
 
-          ))}
+return()=>clearInterval(id)
 
-        </div>
+},[])
 
-        <div>
+return(
 
-          <h3>NOCTURNA</h3>
+<div className="panel fade">
 
-          {datos.sorteo.nocturna.map((r) => (
+<div className="panel-title">
 
-            <div
-              className="resultado"
-              key={r.puesto}
-            >
+🎱 TÓMBOLA
 
-              <span>{r.puesto}°</span>
+</div>
 
-              <strong>{r.numero}</strong>
+<div className="panel-body">
 
-            </div>
+{
 
-          ))}
+!datos?
 
-        </div>
+<h2>Cargando...</h2>
 
-      </div>
+:
 
-    </section>
-  )
+<div className="result-list">
+
+{
+
+datos.vespertina.map((n)=>(
+
+<div
+key={n.puesto}
+className="result-item">
+
+<div className="result-position">
+
+{n.puesto}°
+
+</div>
+
+<div className="result-number">
+
+{n.numero}
+
+</div>
+
+</div>
+
+))
+
+}
+
+</div>
+
+}
+
+</div>
+
+</div>
+
+)
+
 }
