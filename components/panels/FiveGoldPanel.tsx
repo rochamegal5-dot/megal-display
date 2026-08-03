@@ -1,134 +1,93 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect,useState } from 'react'
 
-import {
-  getFiveGold,
-  FiveGoldResponse,
-} from '@/services/fiveGold'
+interface Datos{
 
-export default function FiveGoldPanel() {
+fecha:string
 
-  const [datos, setDatos] =
-    useState<FiveGoldResponse | null>(null)
+bolillas:number[]
 
-  async function cargar() {
+revancha:number[]
 
-    try {
+pozoDeOro:number[]
 
-      const data = await getFiveGold()
+}
 
-      setDatos(data)
+export default function FiveGoldPanel(){
 
-    } catch (e) {
+const[datos,setDatos]=useState<Datos|null>(null)
 
-      console.error(e)
+useEffect(()=>{
 
-    }
+async function cargar(){
 
-  }
+const r=await fetch('/api/fivegold',{cache:'no-store'})
 
-  useEffect(() => {
+const d=await r.json()
 
-    cargar()
+setDatos(d)
 
-    const id = setInterval(cargar, 60000)
+}
 
-    return () => clearInterval(id)
+cargar()
 
-  }, [])
+const id=setInterval(cargar,60000)
 
-  if (!datos) {
+return()=>clearInterval(id)
 
-    return (
+},[])
 
-      <section className="panel">
+return(
 
-        <h2>5 DE ORO</h2>
+<div className="panel fade">
 
-        <p>Cargando...</p>
+<div className="panel-title">
 
-      </section>
+🏆 5 DE ORO
 
-    )
+</div>
 
-  }
+<div className="panel-body">
 
-  return (
+{
 
-    <section className="panel">
+!datos?
 
-      <div className="panel-title">
+<h2>Cargando...</h2>
 
-        5 DE ORO
+:
 
-      </div>
+<>
 
-      <div className="panel-date">
+<div className="bolillas">
 
-        {datos.fecha}
+{
 
-      </div>
+datos.bolillas.map((b,i)=>(
 
-      <div className="fivegold">
+<div
+key={i}
+className="ball">
 
-        {datos.sorteo.numeros.map((n) => (
+{b}
 
-          <div
-            className="bola"
-            key={n}
-          >
+</div>
 
-            {n}
+))
 
-          </div>
+}
 
-        ))}
+</div>
 
-      </div>
+</>
 
-      <div className="extra">
+}
 
-        EXTRA
+</div>
 
-        <span>
+</div>
 
-          {datos.sorteo.bolillaExtra}
-
-        </span>
-
-      </div>
-
-      <div className="pozos">
-
-        <p>
-
-          Pozo de Oro
-
-          <strong>
-
-            {datos.sorteo.pozoDeOro}
-
-          </strong>
-
-        </p>
-
-        <p>
-
-          Revancha
-
-          <strong>
-
-            {datos.sorteo.pozoRevancha}
-
-          </strong>
-
-        </p>
-
-      </div>
-
-    </section>
-
-  )
+)
 
 }
