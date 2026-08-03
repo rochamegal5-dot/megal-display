@@ -1,31 +1,15 @@
-import { getDocument } from "./dnlq";
-import { parseDNLQ } from "@/services/parsers/dnlqParser";
-import { get, put } from "@/services/cache/cache";
+import axios from "axios";
 
-const CACHE_KEY = "dnlq";
+const URL = "https://www.loteria.gub.uy/ver_resultados.php";
 
-export async function getResultados() {
+export async function loadDNLQ(): Promise<string> {
 
-  const cache = get(CACHE_KEY);
+  const { data } = await axios.get(URL, {
+    headers: {
+      "User-Agent": "Mozilla/5.0"
+    },
+    timeout: 15000
+  });
 
-  try {
-
-    const $ = await getDocument();
-
-    const datos = parseDNLQ($);
-
-    put(CACHE_KEY, datos, 60000);
-
-    return datos;
-
-  } catch (error) {
-
-    console.log("Usando caché...");
-
-    if (cache) return cache;
-
-    throw error;
-
-  }
-
+  return data;
 }
