@@ -1,16 +1,15 @@
 import { NextResponse } from "next/server";
-
 import { getResultados } from "@/services/providers/provider";
 
 export async function GET() {
 
-  const datos = await getResultados();
+  const datos: any = await getResultados();
 
   return NextResponse.json({
 
-    fecha: datos.fecha,
+    fecha: datos?.fecha ?? "",
 
-    sorteo: datos.fiveGold,
+    sorteo: datos?.fiveGold ?? [],
 
     ultimaActualizacion: new Date(),
 
