@@ -1,4 +1,4 @@
-import { loadDNLQ } from "./dnlq";
+import { getDocument } from "./dnlq";
 import { parseDNLQ } from "@/services/parsers/dnlqParser";
 import { get, put } from "@/services/cache/cache";
 
@@ -10,9 +10,9 @@ export async function getResultados() {
 
   try {
 
-    const html = await loadDNLQ();
+    const $ = await getDocument();
 
-    const datos = parseDNLQ(html);
+    const datos = parseDNLQ($);
 
     put(CACHE_KEY, datos, 60000);
 
