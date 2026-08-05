@@ -36,7 +36,7 @@ export default function TombolaPanel() {
           <h2>Cargando...</h2>
         ) : (
           <div className="result-list">
-            {datos.numeros.map((numero, index) => (
+            {(datos?.numeros ?? []).map((numero, index) => (
               <div
                 key={index}
                 className="result-item"

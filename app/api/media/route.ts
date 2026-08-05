@@ -17,7 +17,7 @@ export async function GET() {
     },
     {
       type: "image",
-      src: "/media/imagenes/imagen2.jpg",
+      src: "/media/imagenes/imagen1.jpg",
       duration: 8000,
     },
     {
@@ -26,7 +26,7 @@ export async function GET() {
     },
     {
       type: "image",
-      src: "/media/imagenes/imagen3.jpg",
+      src: "/media/imagenes/imagen1.jpg",
       duration: 8000,
     },
   ]);

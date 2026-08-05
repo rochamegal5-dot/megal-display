@@ -27,14 +27,15 @@ export async function GET() {
       }
     });
 
-    const premios = numeros.slice(0, 20).map((numero, i) => ({
+    const vespertina = numeros.slice(0, 20).map((numero, i) => ({
       puesto: i + 1,
       numero,
     }));
 
     return NextResponse.json({
       fecha: new Date().toLocaleDateString("es-UY"),
-      premios,
+      vespertina,
+      nocturna: [],
     });
   } catch (e) {
     return NextResponse.json(
