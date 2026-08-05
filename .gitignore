@@ -17,5 +17,8 @@ yarn-error.log*
 .env
 .env.local
 
+# TypeScript build info
+*.tsbuildinfo
+
 # macOS
 .DS_Store

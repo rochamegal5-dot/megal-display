@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 interface MediaItem {
   type: 'video' | 'image'
@@ -16,9 +17,10 @@ export default function MediaPlayer() {
 
   const timer = useRef<NodeJS.Timeout | null>(null)
 
-  function siguiente() {
+  const siguiente = useCallback(() => {
+    if (!playlist.length) return
     setIndex((i) => (i + 1) % playlist.length)
-  }
+  }, [playlist.length])
 
   useEffect(() => {
 
@@ -53,28 +55,20 @@ const res = await fetch('/api/media', {
   }, [])
 
   useEffect(() => {
-
     if (!playlist.length) return
 
     const actual = playlist[index]
 
     if (actual.type === 'image') {
-
       timer.current = setTimeout(() => {
-
         siguiente()
-
       }, actual.duration ?? 8000)
-
     }
 
     return () => {
-
       if (timer.current) clearTimeout(timer.current)
-
     }
-
-  }, [playlist, index])
+  }, [playlist, index, siguiente])
 
   if (loading) {
 
@@ -138,7 +132,7 @@ const res = await fetch('/api/media', {
 
         :
 
-        <img
+        <Image
 
           key={actual.src}
 
@@ -147,6 +141,12 @@ const res = await fetch('/api/media', {
           alt="Publicidad"
 
           onError={siguiente}
+
+          width={800}
+
+          height={450}
+
+          style={{ width: '100%', height: 'auto' }}
 
         />
 

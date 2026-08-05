@@ -92,7 +92,7 @@ export default function QuinielaPanel(){
 
               {
 
-                datos.vespertina.map((p)=>(
+                (datos.vespertina ?? []).map((p)=>(
 
                   <div
 

@@ -64,7 +64,7 @@ return(
 
 {
 
-datos.bolillas.map((b,i)=>(
+(datos?.bolillas ?? []).map((b,i)=>(
 
 <div
 key={i}
