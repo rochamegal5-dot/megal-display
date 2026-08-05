@@ -6,28 +6,17 @@ interface Props {
   value: string | number
 }
 
-export default function AnimatedNumber({ value }: Props) {
-
-  const [flash, setFlash] = useState(false)
+function FlashNumber({ value }: Props) {
+  const [flash, setFlash] = useState(true)
 
   useEffect(() => {
-
-    setFlash(true)
-
     const id = setTimeout(() => setFlash(false), 1200)
-
     return () => clearTimeout(id)
+  }, [])
 
-  }, [value])
+  return <div className={`animated-number ${flash ? 'flash' : ''}`}>{value}</div>
+}
 
-  return (
-
-    <div className={`animated-number ${flash ? 'flash' : ''}`}>
-
-      {value}
-
-    </div>
-
-  )
-
+export default function AnimatedNumber({ value }: Props) {
+  return <FlashNumber key={value} value={value} />
 }

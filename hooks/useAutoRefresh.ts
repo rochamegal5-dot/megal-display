@@ -1,18 +1,28 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 export function useAutoRefresh(
   callback: () => void | Promise<void>,
   interval = 60000
 ) {
-  useEffect(() => {
-    callback()
+  const callbackRef = useRef(callback)
 
-    const id = setInterval(() => {
-      callback()
+  useEffect(() => {
+    callbackRef.current = callback
+  }, [callback])
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      void callbackRef.current()
+    }, 0)
+    const intervalId = setInterval(() => {
+      void callbackRef.current()
     }, interval)
 
-    return () => clearInterval(id)
-  }, [])
+    return () => {
+      clearTimeout(timeoutId)
+      clearInterval(intervalId)
+    }
+  }, [interval])
 }
