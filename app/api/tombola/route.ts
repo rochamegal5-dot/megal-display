@@ -28,6 +28,7 @@ export async function GET() {
     });
 
     const tombola = dosDigitos.slice(0, 20);
+    console.log(dosDigitos);
 
     return NextResponse.json({
       fecha: new Date().toLocaleDateString("es-UY"),
