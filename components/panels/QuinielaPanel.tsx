@@ -3,133 +3,70 @@
 import { useEffect, useState } from 'react'
 
 interface Premio {
-
-  puesto:number
-
-  numero:string
-
+  puesto: number
+  numero: string
 }
 
 interface Datos {
-
-  fecha:string
-
-  vespertina:Premio[]
-
-  nocturna:Premio[]
-
+  fecha: string
+  vespertina: Premio[]
+  nocturna: Premio[]
 }
 
-export default function QuinielaPanel(){
+export default function QuinielaPanel() {
+  const [datos, setDatos] = useState<Datos | null>(null)
 
-  const [datos,setDatos]=useState<Datos|null>(null)
-
-  useEffect(()=>{
-
-    async function cargar(){
-
-      try{
-
-        const r=await fetch('/api/quiniela',{
-
-          cache:'no-store'
-
+  useEffect(() => {
+    async function cargar() {
+      try {
+        const r = await fetch('/api/quiniela', {
+          cache: 'no-store',
         })
-
-        const d=await r.json()
-
+        const d = await r.json()
         setDatos(d)
-
-      }
-
-      catch(e){
-
+      } catch (e) {
         console.error(e)
-
       }
-
     }
 
     cargar()
+    const id = setInterval(cargar, 60000)
+    return () => clearInterval(id)
+  }, [])
 
-    const id=setInterval(cargar,60000)
-
-    return()=>clearInterval(id)
-
-  },[])
-
-  return(
-
+  return (
     <div className="panel fade">
-
-      <div className="panel-title">
-
-        🎰 QUINIELA
-
-      </div>
+      <div className="panel-title">🎰 QUINIELA</div>
 
       <div className="panel-body">
-
-        {
-
-          !datos
-
-          ?
-
+        {!datos ? (
           <h2>Cargando...</h2>
-
-          :
-
+        ) : (
           <>
+            <div className="panel-meta">Fecha: {datos.fecha}</div>
 
-            <h3 style={{marginBottom:10}}>
-
-              Vespertina
-
-            </h3>
-
+            <h3>Vespertina</h3>
             <div className="result-list">
-
-              {
-
-                (datos.vespertina ?? []).map((p)=>(
-
-                  <div
-
-                    key={p.puesto}
-
-                    className="result-item"
-
-                  >
-
-                    <div className="result-position">
-
-                      {p.puesto}
-
-                    </div>
-
-                    <div className="result-number">
-
-                      {p.numero}
-
-                    </div>
-
-                  </div>
-
-                ))
-
-              }
-
+              {(datos.vespertina ?? []).map((p) => (
+                <div key={`v-${p.puesto}`} className="result-item">
+                  <div className="result-position">{p.puesto}</div>
+                  <div className="result-number">{p.numero}</div>
+                </div>
+              ))}
             </div>
 
+            <h3>Nocturna</h3>
+            <div className="result-list">
+              {(datos.nocturna ?? []).map((p) => (
+                <div key={`n-${p.puesto}`} className="result-item">
+                  <div className="result-position">{p.puesto}</div>
+                  <div className="result-number">{p.numero}</div>
+                </div>
+              ))}
+            </div>
           </>
-
-        }
-
+        )}
       </div>
-
     </div>
-
   )
-
 }
