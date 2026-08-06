@@ -4,7 +4,7 @@ export async function GET() {
   return NextResponse.json([
     {
       type: "video",
-      src: "/media/videos/promo1.mp4"
+      src: "/media/videos/megal.mp4"
     }
   ]);
 }
