@@ -7,6 +7,10 @@ interface Cotizacion {
   dolar: string
   euro: string
   uy: string
+  dolarCompra: string
+  dolarVenta: string
+  euroCompra: string
+  euroVenta: string
 }
 
 export default function CotizacionPanel() {
@@ -35,12 +39,20 @@ export default function CotizacionPanel() {
         {data ? (
           <div className="cotizacion-grid">
             <div className="cotizacion-item">
-              <span>Dólar</span>
-              <strong>{data.dolar}</strong>
+              <span>Dólar Compra</span>
+              <strong>{data.dolarCompra}</strong>
             </div>
             <div className="cotizacion-item">
-              <span>Euro</span>
-              <strong>{data.euro}</strong>
+              <span>Dólar Venta</span>
+              <strong>{data.dolarVenta}</strong>
+            </div>
+            <div className="cotizacion-item">
+              <span>Euro Compra</span>
+              <strong>{data.euroCompra}</strong>
+            </div>
+            <div className="cotizacion-item">
+              <span>Euro Venta</span>
+              <strong>{data.euroVenta}</strong>
             </div>
             <div className="cotizacion-item">
               <span>UYU</span>
