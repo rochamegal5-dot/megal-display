@@ -1,37 +1,20 @@
-import Header from "@/components/layout/Header";
-
-import QuinielaPanel from "@/components/panels/QuinielaPanel";
-import TombolaPanel from "@/components/panels/TombolaPanel";
-import FiveGoldPanel from "@/components/panels/FiveGoldPanel";
-import AdsPanel from "@/components/panels/AdsPanel";
-import Ticker from "@/components/layout/Ticker";
+import Carousel from "@/components/Carousel";
+import CotizacionPanel from "@/components/panels/CotizacionPanel";
+import PublicityPanel from "@/components/panels/PublicityPanel";
+import QuinielaSlide from "@/components/panels/QuinielaSlide";
+import CincoDeOroSlide from "@/components/panels/CincoDeOroSlide";
+import TombolaSlide from "@/components/panels/TombolaSlide";
 
 export default function Home() {
   return (
     <main className="dashboard">
-
-      <Header />
-
-      <section className="principal">
-
-        <div className="columna">
-          <QuinielaPanel />
-        </div>
-
-        <div className="columna">
-          <TombolaPanel />
-        </div>
-
-        <div className="columna">
-          <FiveGoldPanel />
-        </div>
-
-      </section>
-
-      <AdsPanel />
-
-      <Ticker />
-
+      <Carousel>
+        <CotizacionPanel />
+        <PublicityPanel />
+        <QuinielaSlide />
+        <CincoDeOroSlide />
+        <TombolaSlide />
+      </Carousel>
     </main>
   );
 }

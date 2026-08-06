@@ -83,24 +83,222 @@ background-attachment:fixed;
 ===================================================== */
 
 .dashboard{
-
-width:100vw;
-
-height:100vh;
-
-display:flex;
-
-flex-direction:column;
-
-padding:15px;
-
-gap:18px;
-
+  width:100vw;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  margin:0;
+  background:#000;
 }
 
-/* =====================================================
-   HEADER
-===================================================== */
+.carousel{
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+.carousel-nav{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  padding:18px 0;
+}
+
+.carousel-dot{
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.5);
+  background:transparent;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.carousel-dot.active{
+  background:#fff;
+  border-color:#fff;
+}
+
+.carousel-slides{
+  flex:1;
+  position:relative;
+}
+
+.carousel-slide{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  transform:scale(0.95);
+  transition:opacity .8s ease, transform .8s ease;
+  pointer-events:none;
+}
+
+.carousel-slide.active{
+  opacity:1;
+  transform:scale(1);
+  pointer-events:auto;
+}
+
+.panel{
+  width:100%;
+  height:100%;
+  border-radius:0;
+  display:flex;
+  flex-direction:column;
+  background:linear-gradient(180deg,#050505,#0f0f0f);
+  padding:40px;
+  gap:28px;
+}
+
+.panel-title{
+  font-size:4rem;
+  font-weight:900;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:#fff;
+}
+
+.panel-body{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:24px;
+}
+
+.panel-loading{
+  font-size:2rem;
+  font-weight:700;
+  text-align:center;
+  width:100%;
+}
+
+.cotizacion-grid,
+.result-list-small,
+.publicity-list,
+.tombola-grid {
+  display:grid;
+  gap:18px;
+}
+
+.cotizacion-grid{
+  grid-template-columns:repeat(3, minmax(180px, 1fr));
+}
+
+.cotizacion-item,
+.publicity-item,
+.result-row,
+.ball-big{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:24px;
+  border-radius:28px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.12);
+  min-height:140px;
+}
+
+.cotizacion-item span,
+.publicity-item strong,
+.result-header,
+.pozo-info{
+  font-size:1.5rem;
+  color:#ccc;
+}
+
+.cotizacion-item strong,
+.ball-big,
+.result-row strong{
+  font-size:3rem;
+  font-weight:900;
+  color:#fff;
+}
+
+.publicity-list{
+  grid-template-columns:repeat(2, minmax(280px, 1fr));
+}
+
+.publicity-item{
+  text-align:left;
+}
+
+.publicity-item strong{
+  font-size:2.2rem;
+  color:#fff;
+}
+
+.publicity-item p{
+  font-size:1.6rem;
+  color:#ddd;
+}
+
+.result-column{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+}
+
+.result-header{
+  font-size:2.4rem;
+  font-weight:900;
+  padding:18px 22px;
+  border-radius:18px;
+  background:rgba(255,255,255,.08);
+}
+
+.result-row{
+  grid-template-columns:1fr 2fr;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px;
+  border-radius:18px;
+  background:rgba(255,255,255,.04);
+}
+
+.ball-big{
+  font-size:3rem;
+  font-weight:900;
+  min-height:120px;
+  border-radius:24px;
+}
+
+.tombola-grid{
+  grid-template-columns:repeat(5, minmax(120px, 1fr));
+}
+
+.pozo-info{
+  font-size:2rem;
+  color:#fff;
+  text-align:center;
+  margin-top:16px;
+}
+
+.panel-cotizacion .panel-title { color:#00ff92; }
+.panel-publicidad .panel-title { color:#49b8ff; }
+.panel-quiniela .panel-title { color:#ffd700; }
+.panel-cinco .panel-title { color:#ff3b30; }
+.panel-tombola .panel-title { color:#9b5cff; }
+
+@media (max-width: 1200px) {
+  .carousel-nav { gap:10px; padding:12px 0; }
+  .panel { padding:28px; }
+  .panel-title { font-size:3rem; }
+  .cotizacion-item strong, .ball-big, .result-row strong { font-size:2.5rem; }
+}
+
+@media (max-width: 768px) {
+  .cotizacion-grid, .publicity-list, .tombola-grid { grid-template-columns: 1fr; }
+  .panel { padding:22px; }
+  .panel-title { font-size:2.4rem; }
+}
 
 .header{
 
