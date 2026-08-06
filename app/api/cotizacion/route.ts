@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
-const API_USD = "https://api.exchangerate.host/latest?base=USD&symbols=UYU";
-const API_EUR = "https://api.exchangerate.host/latest?base=EUR&symbols=UYU";
+const API_USD = "https://open.er-api.com/v6/latest/USD";
+const API_EUR = "https://open.er-api.com/v6/latest/EUR";
 
 export async function GET() {
   try {
@@ -29,7 +29,7 @@ export async function GET() {
       dolar: `UYU ${dolar.toFixed(2)}`,
       euro: `UYU ${euro.toFixed(2)}`,
       uy: `UYU 1.00`,
-      origen: "exchangerate.host",
+      origen: "open.er-api.com",
     });
   } catch (error) {
     console.error("Error al obtener cotizaciones reales", error);
