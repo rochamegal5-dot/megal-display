@@ -1,99 +1,87 @@
-import { NextResponse } from "next/server";
-import * as cheerio from "cheerio";
+import { NextResponse } from 'next/server'
+import * as cheerio from 'cheerio'
 
-function extraerPremiosDesdeTabla($: cheerio.CheerioAPI, tabla: cheerio.Cheerio<any>) {
-  const premios: Array<{ puesto: number; numero: string }> = [];
+export const dynamic = 'force-dynamic'
 
-  tabla.find("tbody tr").each((_, fila) => {
-    const celdas = $(fila).find("td");
+const DNLQ_URL = 'https://www.loteria.gub.uy/ver_resultados.php'
 
-    if (celdas.length < 4) return;
+type Premio = { puesto: number; numero: string }
 
-    const numero1 = $(celdas[1]).text().trim();
-    const numero2 = $(celdas[3]).text().trim();
+function normalizar(texto: string) {
+  return texto.replace(/\s+/g, ' ').trim()
+}
 
-    const tieneNumeros = /^\d{3}$/.test(numero1) || /^\d{3}$/.test(numero2);
-    if (!tieneNumeros) return;
+function extraerBloque(texto: string, inicio: string, fin: string) {
+  const lower = texto.toLowerCase()
+  const a = lower.indexOf(inicio.toLowerCase())
+  if (a < 0) return ''
+  const desde = a + inicio.length
+  const b = fin ? lower.indexOf(fin.toLowerCase(), desde) : -1
+  return texto.slice(desde, b >= 0 ? b : undefined)
+}
 
-    if (/^\d{3}$/.test(numero1)) {
-      premios.push({ puesto: premios.length + 1, numero: numero1 });
-    }
-
-    if (/^\d{3}$/.test(numero2)) {
-      premios.push({ puesto: premios.length + 1, numero: numero2 });
-    }
-  });
-
-  return premios.slice(0, 20);
+function premiosDeBloque(bloque: string): Premio[] {
+  const encontrados = bloque.match(/\b\d{3}\b/g) ?? []
+  return encontrados.slice(0, 20).map((numero, index) => ({
+    puesto: index + 1,
+    numero,
+  }))
 }
 
 export async function GET() {
+  const vacio = {
+    vespertina: [] as Premio[],
+    nocturna: [] as Premio[],
+  }
+
   try {
-    const url = "https://quinielamontevideo.com/";
-
-    const res = await fetch(url, {
-      cache: "no-store",
+    const res = await fetch(DNLQ_URL, {
+      cache: 'no-store',
       headers: {
-        "User-Agent": "Mozilla/5.0",
-        Accept: "text/html,application/xhtml+xml",
+        'User-Agent': 'Mozilla/5.0 (compatible; MegalDisplay/1.0)',
+        Accept: 'text/html,application/xhtml+xml',
       },
-    });
+    })
 
-    if (!res.ok) {
-      throw new Error(`El servicio externo respondió con ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`DNLQ respondió ${res.status}`)
 
-    const html = await res.text();
-    const $ = cheerio.load(html);
+    const html = await res.text()
+    const $ = cheerio.load(html)
+    const texto = normalizar($('body').text())
 
-    const fecha = $("body").text().match(/\d{2}\/\d{2}\/\d{4}/)?.[0] ?? new Date().toLocaleDateString("es-UY");
+    const vespertina = premiosDeBloque(
+      extraerBloque(
+        texto,
+        'TABLA QUINIELA Y TOMBOLA VESPERTINA',
+        'Próximo Vespertino:',
+      ),
+    )
 
-    const sorteos: Record<string, Array<{ puesto: number; numero: string }>> = {
-      vespertina: [],
-      nocturna: [],
-    };
+    const nocturna = premiosDeBloque(
+      extraerBloque(
+        texto,
+        'TABLA QUINIELA Y TOMBOLA NOCTURNO',
+        'Próximo Nocturno:',
+      ),
+    )
 
-    $("div.shadow.alert")
-      .has("h3")
-      .each((_, contenedor) => {
-        const titulo = $(contenedor).find("h3").text().trim().toLowerCase();
-        const tabla = $(contenedor).find("table").first();
-
-        if (!tabla.length) return;
-
-        const premios = extraerPremiosDesdeTabla($, tabla);
-        if (premios.length === 0) return;
-
-        if (titulo.includes("nocturno")) {
-          sorteos.nocturna = premios;
-        } else if (titulo.includes("vespertino")) {
-          sorteos.vespertina = premios;
-        }
-      });
+    const fecha =
+      texto.match(/\b\d{1,2}\s+de\s+[A-Za-zÁÉÍÓÚáéíóú]+\s+de\s+\d{4}\b/)?.[0] ??
+      new Date().toLocaleDateString('es-UY')
 
     return NextResponse.json({
       fecha,
-      sorteo: {
-        vespertina: sorteos.vespertina,
-        nocturna: sorteos.nocturna,
-      },
-      ultimaActualizacion: new Date().toLocaleTimeString("es-UY"),
-      estado: "OK",
-    });
-  } catch (e) {
-    console.error("Error al obtener quiniela", e);
-
-    return NextResponse.json(
-      {
-        error: "No se pudieron obtener los resultados",
-        fecha: new Date().toLocaleDateString("es-UY"),
-        sorteo: {
-          vespertina: [],
-          nocturna: [],
-        },
-        ultimaActualizacion: new Date().toLocaleTimeString("es-UY"),
-      },
-      { status: 500 }
-    );
+      sorteo: { vespertina, nocturna },
+      ultimaActualizacion: new Date().toLocaleTimeString('es-UY'),
+      estado: 'OK',
+    })
+  } catch (error) {
+    console.error('Error DNLQ quiniela:', error)
+    return NextResponse.json({
+      fecha: new Date().toLocaleDateString('es-UY'),
+      sorteo: vacio,
+      ultimaActualizacion: new Date().toLocaleTimeString('es-UY'),
+      estado: 'SIN_CONEXION',
+    })
   }
 }
