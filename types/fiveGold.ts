@@ -14,4 +14,3 @@ export interface FiveGoldResponse {
   ultimaActualizacion: string;
   estado?: string;
 }
-
