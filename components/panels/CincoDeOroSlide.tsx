@@ -18,11 +18,53 @@ interface FiveGoldData {
   estado?: string
 }
 
+const STORAGE_KEY = 'megal-ultimo-5-de-oro'
+
 export default function CincoDeOroSlide() {
 
   const [data, setData] = useState<FiveGoldData | null>(null)
 
+  const [cargando, setCargando] = useState(true)
+
   useEffect(() => {
+
+    /*
+     * PRIMERO:
+     * recuperamos el último resultado guardado.
+     */
+
+    try {
+
+      const guardado = localStorage.getItem(STORAGE_KEY)
+
+      if (guardado) {
+
+        const anterior = JSON.parse(guardado)
+
+        if (
+          anterior?.sorteo?.bolillas &&
+          anterior.sorteo.bolillas.length > 0
+        ) {
+
+          setData(anterior)
+
+        }
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        'Error recuperando último 5 de Oro:',
+        error
+      )
+
+    }
+
+    /*
+     * DESPUÉS:
+     * consultamos la API.
+     */
 
     async function cargar() {
 
@@ -33,20 +75,60 @@ export default function CincoDeOroSlide() {
         })
 
         if (!res.ok) {
-          throw new Error('Error en API 5 de Oro')
+
+          throw new Error(
+            'Error en API 5 de Oro'
+          )
+
         }
 
-        const json = await res.json()
+        const json: FiveGoldData = await res.json()
 
-        console.log('5 DE ORO API:', json)
+        console.log(
+          '5 DE ORO API:',
+          json
+        )
 
-        setData(json)
+        /*
+         * SOLAMENTE reemplazamos los resultados
+         * si realmente recibimos números.
+         */
+
+        const nuevosNumeros =
+          json?.sorteo?.bolillas ?? []
+
+        if (nuevosNumeros.length > 0) {
+
+          setData(json)
+
+          try {
+
+            localStorage.setItem(
+              STORAGE_KEY,
+              JSON.stringify(json)
+            )
+
+          } catch (error) {
+
+            console.error(
+              'No se pudo guardar 5 de Oro:',
+              error
+            )
+
+          }
+
+        }
 
       } catch (error) {
 
-        console.error('Error cargando 5 de Oro:', error)
+        console.error(
+          'Error cargando 5 de Oro:',
+          error
+        )
 
-        setData(null)
+      } finally {
+
+        setCargando(false)
 
       }
 
@@ -54,18 +136,60 @@ export default function CincoDeOroSlide() {
 
     cargar()
 
-    const id = setInterval(cargar, 60000)
+    /*
+     * Actualizamos cada minuto.
+     */
+
+    const id = setInterval(
+      cargar,
+      60000
+    )
 
     return () => clearInterval(id)
 
   }, [])
 
-  const bolillas = data?.sorteo?.bolillas ?? []
+  const bolillas =
+    data?.sorteo?.bolillas ?? []
 
-  const revancha = data?.sorteo?.revancha ?? []
+  const revancha =
+    data?.sorteo?.revancha ?? []
 
   const pozoDeOro =
     data?.sorteo?.pozoDeOro ?? ''
+
+  /*
+   * Si es la primera vez que se abre
+   * y todavía nunca hubo resultados guardados.
+   */
+
+  if (cargando && !data) {
+
+    return (
+
+      <div className="panel panel-cinco">
+
+        <div className="panel-title">
+
+          🏆 5 DE ORO
+
+        </div>
+
+        <div className="panel-body">
+
+          <div className="panel-loading">
+
+            Cargando resultados...
+
+          </div>
+
+        </div>
+
+      </div>
+
+    )
+
+  }
 
   return (
 
@@ -79,15 +203,7 @@ export default function CincoDeOroSlide() {
 
       <div className="panel-body">
 
-        {!data ? (
-
-          <div className="panel-loading">
-
-            Cargando resultados...
-
-          </div>
-
-        ) : (
+        {data ? (
 
           <>
 
@@ -103,18 +219,21 @@ export default function CincoDeOroSlide() {
 
                 <div className="result-list-small">
 
-                  {bolillas.map((numero, index) => (
+                  {bolillas.map(
+                    (numero, index) => (
 
-                    <div
-                      key={`oro-${index}-${numero}`}
-                      className="ball-big"
-                    >
+                      <div
+                        key={`oro-${index}-${numero}`}
+                        className="ball-big"
+                      >
 
-                      {String(numero).padStart(2, '0')}
+                        {String(numero)
+                          .padStart(2, '0')}
 
-                    </div>
+                      </div>
 
-                  ))}
+                    )
+                  )}
 
                 </div>
 
@@ -134,7 +253,7 @@ export default function CincoDeOroSlide() {
 
               <div className="panel-loading">
 
-                Resultados aún no disponibles
+                Sin resultados
 
               </div>
 
@@ -152,18 +271,21 @@ export default function CincoDeOroSlide() {
 
                 <div className="result-list-small">
 
-                  {revancha.map((numero, index) => (
+                  {revancha.map(
+                    (numero, index) => (
 
-                    <div
-                      key={`rev-${index}-${numero}`}
-                      className="ball-big silver"
-                    >
+                      <div
+                        key={`rev-${index}-${numero}`}
+                        className="ball-big silver"
+                      >
 
-                      {String(numero).padStart(2, '0')}
+                        {String(numero)
+                          .padStart(2, '0')}
 
-                    </div>
+                      </div>
 
-                  ))}
+                    )
+                  )}
 
                 </div>
 
@@ -171,17 +293,25 @@ export default function CincoDeOroSlide() {
 
             )}
 
-            {data.ultimaActualizacion && (
+            <div className="last-update">
 
-              <div className="last-update">
+              Último resultado:
 
-                Última actualización: {data.ultimaActualizacion}
+              {' '}
 
-              </div>
+              {data.fecha ?? '—'}
 
-            )}
+            </div>
 
           </>
+
+        ) : (
+
+          <div className="panel-loading">
+
+            Esperando primer resultado...
+
+          </div>
 
         )}
 
