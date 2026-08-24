@@ -1,71 +1,75 @@
-import { NextResponse } from "next/server";
-import * as cheerio from "cheerio";
+import { NextResponse } from 'next/server'
+import * as cheerio from 'cheerio'
 
-const BROU_URL =
-  "https://www.brou.com.uy/c/portal/render_portlet?p_l_id=20593&p_p_id=cotizacionfull_WAR_broutmfportlet_INSTANCE_otHfewh1klyS&p_p_lifecycle=0&p_t_lifecycle=0&p_p_state=normal&p_p_mode=view&p_p_col_id=column-1&p_p_col_pos=0&p_p_col_count=2&p_p_isolated=1&currentURL=%2Fcotizaciones";
+export const dynamic = 'force-dynamic'
 
-function parseValue(raw: string) {
-  return raw.trim().replace(/\s+/g, " ");
+const DNLQ_URL = 'https://www.loteria.gub.uy/ver_resultados.php'
+
+function normalizar(texto: string) {
+  return texto.replace(/\s+/g, ' ').trim()
+}
+
+function numerosDesde(texto: string, inicio: string, fin: string) {
+  const lower = texto.toLowerCase()
+  const a = lower.indexOf(inicio.toLowerCase())
+  if (a < 0) return []
+  const desde = a + inicio.length
+  const b = lower.indexOf(fin.toLowerCase(), desde)
+  const bloque = texto.slice(desde, b >= 0 ? b : undefined)
+  return (bloque.match(/\b\d{2}\b/g) ?? []).slice(0, 6).map(Number)
+}
+
+function pozo(texto: string, etiqueta: string) {
+  const regex = new RegExp(`${etiqueta}:\\s*\\$\\s*([0-9.,]+)`, 'i')
+  return texto.match(regex)?.[1] ? `$ ${texto.match(regex)![1]}` : ''
 }
 
 export async function GET() {
   try {
-    const res = await fetch(BROU_URL, {
-      cache: "no-store",
+    const res = await fetch(DNLQ_URL, {
+      cache: 'no-store',
       headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        'User-Agent': 'Mozilla/5.0 (compatible; MegalDisplay/1.0)',
       },
-    });
+    })
+    if (!res.ok) throw new Error(`DNLQ respondió ${res.status}`)
 
-    if (!res.ok) {
-      throw new Error(`Error en la consulta de Brou: ${res.status}`);
-    }
+    const html = await res.text()
+    const $ = cheerio.load(html)
+    const texto = normalizar($('body').text())
 
-    const html = await res.text();
-    const $ = cheerio.load(html);
-    const rows = Array.from($("table tbody tr")).map((row) => {
-      const moneda = $(row).find("p.moneda").text().trim();
-      const valores = $(row)
-        .find("p.valor")
-        .map((_, el) => parseValue($(el).text()))
-        .get();
-      return { moneda, valores };
-    });
-
-    const dolarRow = rows.find((row) => row.moneda.toLowerCase().includes("dólar") && !row.moneda.toLowerCase().includes("ebrou"));
-    const euroRow = rows.find((row) => row.moneda.toLowerCase().includes("euro"));
-
-    if (!dolarRow || !euroRow || dolarRow.valores.length < 2 || euroRow.valores.length < 2) {
-      throw new Error("No se pudo extraer la cotización de Brou");
-    }
-
-    const [dolarCompra, dolarVenta] = dolarRow.valores;
-    const [euroCompra, euroVenta] = euroRow.valores;
+    const bolillas = numerosDesde(texto, 'Ganadores del 5 de Oro', 'Pozo de Oro:')
+    const revancha = numerosDesde(texto, 'Ganadores del Sorteo Revancha', 'Pozo Revancha:')
 
     return NextResponse.json({
-      fecha: new Date().toLocaleDateString("es-UY"),
-      dolar: `${dolarCompra} / ${dolarVenta}`,
-      euro: `${euroCompra} / ${euroVenta}`,
-      dolarCompra,
-      dolarVenta,
-      euroCompra,
-      euroVenta,
-      uy: "UYU 1.00",
-      origen: "brou.com.uy",
-    });
-  } catch (error) {
-    console.error("Error al obtener cotizaciones reales", error);
-
-    return NextResponse.json(
-      {
-        fecha: new Date().toLocaleDateString("es-UY"),
-        dolar: "$ 42.50",
-        euro: "$ 45.80",
-        uy: "$ 1.00",
-        origen: "fallback",
+      fecha:
+        texto.match(/\b\d{1,2}\s+de\s+[A-Za-zÁÉÍÓÚáéíóú]+\s+de\s+\d{4}\b/)?.[0] ??
+        new Date().toLocaleDateString('es-UY'),
+      sorteo: {
+        bolillas: bolillas.slice(0, 5),
+        bolillaExtra: bolillas[5] ?? null,
+        revancha: revancha.slice(0, 5),
+        pozoDeOro: pozo(texto, 'Pozo de Oro'),
+        pozoRevancha: pozo(texto, 'Pozo Revancha'),
+        pozoDePlata: pozo(texto, 'Pozo de Plata'),
       },
-      { status: 500 }
-    );
+      ultimaActualizacion: new Date().toLocaleTimeString('es-UY'),
+      estado: 'OK',
+    })
+  } catch (error) {
+    console.error('Error DNLQ 5 de Oro:', error)
+    return NextResponse.json({
+      fecha: new Date().toLocaleDateString('es-UY'),
+      sorteo: {
+        bolillas: [],
+        bolillaExtra: null,
+        revancha: [],
+        pozoDeOro: '',
+        pozoRevancha: '',
+        pozoDePlata: '',
+      },
+      ultimaActualizacion: new Date().toLocaleTimeString('es-UY'),
+      estado: 'SIN_CONEXION',
+    })
   }
 }

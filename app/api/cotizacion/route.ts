@@ -51,7 +51,6 @@ export async function GET() {
       dolarVenta,
       euroCompra,
       euroVenta,
-      uy: "UYU 1.00",
       origen: "brou.com.uy",
     });
   } catch (error) {
@@ -60,9 +59,12 @@ export async function GET() {
     return NextResponse.json(
       {
         fecha: new Date().toLocaleDateString("es-UY"),
-        dolar: "$ 42.50",
-        euro: "$ 45.80",
-        uy: "$ 1.00",
+        dolar: "$ 42.50 / $ 44.90",
+        euro: "$ 48.00 / $ 52.00",
+        dolarCompra: "$ 42.50",
+        dolarVenta: "$ 44.90",
+        euroCompra: "$ 48.00",
+        euroVenta: "$ 52.00",
         origen: "fallback",
       },
       { status: 500 }

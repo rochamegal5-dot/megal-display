@@ -6,7 +6,6 @@ interface Cotizacion {
   fecha: string
   dolar: string
   euro: string
-  uy: string
   dolarCompra: string
   dolarVenta: string
   euroCompra: string
@@ -20,6 +19,7 @@ export default function CotizacionPanel() {
     async function cargar() {
       try {
         const res = await fetch('/api/cotizacion', { cache: 'no-store' })
+        if (!res.ok) throw new Error('No se pudo obtener la cotización')
         const json = await res.json()
         setData(json)
       } catch {
@@ -53,10 +53,6 @@ export default function CotizacionPanel() {
             <div className="cotizacion-item">
               <span>Euro Venta</span>
               <strong>{data.euroVenta}</strong>
-            </div>
-            <div className="cotizacion-item">
-              <span>UYU</span>
-              <strong>{data.uy}</strong>
             </div>
           </div>
         ) : (
