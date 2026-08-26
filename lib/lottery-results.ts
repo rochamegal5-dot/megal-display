@@ -61,96 +61,7 @@ function crearPremios(numeros: string[]): Premio[] {
 }
 
 /* =====================================================
-   EXTRAER NÚMEROS DE UNA SECCIÓN
-===================================================== */
-
-function extraerNumerosDeSeccion(
-  $: cheerio.CheerioAPI,
-  elemento: cheerio.Element,
-) {
-  const numeros3: string[] = []
-  const numeros2: string[] = []
-
-  const texto = normalizar($(elemento).text())
-
-  /*
-   * Primero buscamos números de 3 cifras.
-   * Son los correspondientes a Quiniela.
-   */
-  const encontrados3 = texto.match(/\b\d{3}\b/g) ?? []
-
-  for (const numero of encontrados3) {
-    if (!numeros3.includes(numero)) {
-      numeros3.push(numero)
-    }
-  }
-
-  /*
-   * Luego buscamos números de 2 cifras.
-   *
-   * En la página oficial aparecen así:
-   *
-   * 01 | separador | 02
-   * 04 | separador | 06
-   *
-   * Por eso hay que extraer AMBOS.
-   */
-  const encontrados2 = texto.match(/\b\d{2}\b/g) ?? []
-
-  for (const numero of encontrados2) {
-    if (!numeros2.includes(numero)) {
-      numeros2.push(numero)
-    }
-  }
-
-  return {
-    quiniela: numeros3.slice(0, 20),
-    tombola: numeros2.slice(0, 20),
-  }
-}
-
-/* =====================================================
-   BUSCAR BLOQUES VESPERTINO / NOCTURNO
-===================================================== */
-
-function encontrarBloques(
-  $: cheerio.CheerioAPI,
-) {
-  const bloques: {
-    tipo: 'vespertina' | 'nocturna'
-    elemento: cheerio.Element
-  }[] = []
-
-  $('body *').each((_, el) => {
-    const texto = normalizar($(el).text())
-
-    if (
-      texto.includes('TABLA QUINIELA Y TOMBOLA VESPERTINA') ||
-      texto.includes('QUINIELA Y TÓMBOLA VESPERTINA')
-    ) {
-      bloques.push({
-        tipo: 'vespertina',
-        elemento: el,
-      })
-    }
-
-    if (
-      texto.includes('TABLA QUINIELA Y TOMBOLA NOCTURNO') ||
-      texto.includes('TABLA QUINIELA Y TOMBOLA NOCTURNA') ||
-      texto.includes('QUINIELA Y TÓMBOLA NOCTURNO')
-    ) {
-      bloques.push({
-        tipo: 'nocturna',
-        elemento: el,
-      })
-    }
-  })
-
-  return bloques
-}
-
-/* =====================================================
-   RESULTADO DE UN DÍA
+   OBTENER RESULTADO DE UN DÍA
 ===================================================== */
 
 export async function obtenerResultadoDia(
@@ -198,177 +109,127 @@ export async function obtenerResultadoDia(
     fechaNocturna: '',
   }
 
-  /*
-   * =====================================================
-   * MÉTODO PRINCIPAL
-   *
-   * La página oficial tiene primero la tabla Vespertina
-   * y luego la tabla Nocturna.
-   * =====================================================
-   */
+  /* =====================================================
+     BUSCAR TABLAS
+  ===================================================== */
 
-  const textosVespertinos: string[] = []
-  const textosNocturnos: string[] = []
-
-  /*
-   * Buscamos directamente las tablas que contienen
-   * los títulos correspondientes.
-   */
+  const tablasVespertina: string[] = []
+  const tablasNocturna: string[] = []
 
   $('table').each((_, table) => {
 
     const texto = normalizar($(table).text())
 
+    const textoMayus = texto.toUpperCase()
+
     if (
-      texto.includes('TABLA QUINIELA VESPERTINA') ||
-      texto.includes('TABLA TOMBOLA VESPERTINA')
+      textoMayus.includes('QUINIELA VESPERTINA') ||
+      textoMayus.includes('TOMBOLA VESPERTINA') ||
+      textoMayus.includes('TÓMBOLA VESPERTINA')
     ) {
-      textosVespertinos.push(texto)
+      tablasVespertina.push(texto)
     }
 
     if (
-      texto.includes('TABLA QUINIELA NOCTURNO') ||
-      texto.includes('TABLA TOMBOLA NOCTURNO')
+      textoMayus.includes('QUINIELA NOCTURNO') ||
+      textoMayus.includes('QUINIELA NOCTURNA') ||
+      textoMayus.includes('TOMBOLA NOCTURNO') ||
+      textoMayus.includes('TOMBOLA NOCTURNA') ||
+      textoMayus.includes('TÓMBOLA NOCTURNO') ||
+      textoMayus.includes('TÓMBOLA NOCTURNA')
     ) {
-      textosNocturnos.push(texto)
+      tablasNocturna.push(texto)
     }
 
   })
 
-  /*
-   * =====================================================
-   * VESPERTINA
-   * =====================================================
-   */
+  /* =====================================================
+     VESPERTINA
+  ===================================================== */
 
-  if (textosVespertinos.length) {
+  if (tablasVespertina.length) {
 
-    const texto = textosVespertinos.join(' ')
+    const texto = tablasVespertina.join(' ')
 
-    const quiniela = Array.from(
-      new Set(texto.match(/\b\d{3}\b/g) ?? []),
+    const numeros3 = Array.from(
+      new Set(
+        texto.match(/\b\d{3}\b/g) ?? [],
+      ),
     ).slice(0, 20)
 
-    const tombola = Array.from(
-      new Set(texto.match(/\b\d{2}\b/g) ?? []),
+    const numeros2 = Array.from(
+      new Set(
+        texto.match(/\b\d{2}\b/g) ?? [],
+      ),
     ).slice(0, 20)
 
-    resultado.quinielaVespertina = crearPremios(quiniela)
+    resultado.quinielaVespertina =
+      crearPremios(numeros3)
 
-    resultado.tombolaVespertina = tombola
+    resultado.tombolaVespertina =
+      numeros2
 
     resultado.fechaVespertina =
       fechaDesdeTexto(texto) || fechaGeneral
   }
 
-  /*
-   * =====================================================
-   * NOCTURNA
-   * =====================================================
-   */
+  /* =====================================================
+     NOCTURNA
+  ===================================================== */
 
-  if (textosNocturnos.length) {
+  if (tablasNocturna.length) {
 
-    const texto = textosNocturnos.join(' ')
+    const texto = tablasNocturna.join(' ')
 
-    const quiniela = Array.from(
-      new Set(texto.match(/\b\d{3}\b/g) ?? []),
+    const numeros3 = Array.from(
+      new Set(
+        texto.match(/\b\d{3}\b/g) ?? [],
+      ),
     ).slice(0, 20)
 
-    const tombola = Array.from(
-      new Set(texto.match(/\b\d{2}\b/g) ?? []),
+    const numeros2 = Array.from(
+      new Set(
+        texto.match(/\b\d{2}\b/g) ?? [],
+      ),
     ).slice(0, 20)
 
-    resultado.quinielaNocturna = crearPremios(quiniela)
+    resultado.quinielaNocturna =
+      crearPremios(numeros3)
 
-    resultado.tombolaNocturna = tombola
+    resultado.tombolaNocturna =
+      numeros2
 
     resultado.fechaNocturna =
       fechaDesdeTexto(texto) || fechaGeneral
   }
 
-  /*
-   * =====================================================
-   * SEGUNDO MÉTODO
-   *
-   * Si la página cambia la estructura de tablas,
-   * intentamos localizar los bloques por encabezado.
-   * =====================================================
-   */
-
-  if (
-    !resultado.quinielaVespertina.length ||
-    !resultado.tombolaVespertina.length ||
-    !resultado.quinielaNocturna.length ||
-    !resultado.tombolaNocturna.length
-  ) {
-
-    const bloques = encontrarBloques($)
-
-    for (const bloque of bloques) {
-
-      const texto = normalizar($(bloque.elemento).parent().text())
-
-      const numeros3 = Array.from(
-        new Set(texto.match(/\b\d{3}\b/g) ?? []),
-      ).slice(0, 20)
-
-      const numeros2 = Array.from(
-        new Set(texto.match(/\b\d{2}\b/g) ?? []),
-      ).slice(0, 20)
-
-      if (bloque.tipo === 'vespertina') {
-
-        if (!resultado.quinielaVespertina.length) {
-          resultado.quinielaVespertina = crearPremios(numeros3)
-        }
-
-        if (!resultado.tombolaVespertina.length) {
-          resultado.tombolaVespertina = numeros2
-        }
-
-        if (!resultado.fechaVespertina) {
-          resultado.fechaVespertina =
-            fechaDesdeTexto(texto) || fechaGeneral
-        }
-      }
-
-      if (bloque.tipo === 'nocturna') {
-
-        if (!resultado.quinielaNocturna.length) {
-          resultado.quinielaNocturna = crearPremios(numeros3)
-        }
-
-        if (!resultado.tombolaNocturna.length) {
-          resultado.tombolaNocturna = numeros2
-        }
-
-        if (!resultado.fechaNocturna) {
-          resultado.fechaNocturna =
-            fechaDesdeTexto(texto) || fechaGeneral
-        }
-      }
-    }
-  }
-
-  /*
-   * =====================================================
-   * VALIDACIÓN
-   * =====================================================
-   */
+  /* =====================================================
+     INFORMACIÓN DE DEPURACIÓN
+  ===================================================== */
 
   console.log('RESULTADO DNLQ:', {
-    fechaVespertina: resultado.fechaVespertina,
+    fechaVespertina:
+      resultado.fechaVespertina,
+
     quinielaVespertina:
       resultado.quinielaVespertina.length,
+
     tombolaVespertina:
       resultado.tombolaVespertina.length,
-    fechaNocturna: resultado.fechaNocturna,
+
+    fechaNocturna:
+      resultado.fechaNocturna,
+
     quinielaNocturna:
       resultado.quinielaNocturna.length,
+
     tombolaNocturna:
       resultado.tombolaNocturna.length,
   })
+
+  /* =====================================================
+     SI NO ENCONTRAMOS NADA
+  ===================================================== */
 
   if (
     !resultado.quinielaVespertina.length &&
@@ -392,13 +253,15 @@ function fechaAnterior(
 ) {
   const copia = new Date(base)
 
-  copia.setDate(copia.getDate() - dias)
+  copia.setDate(
+    copia.getDate() - dias,
+  )
 
   return copia
 }
 
 /* =====================================================
-   OBTENER ÚLTIMOS RESULTADOS
+   ÚLTIMOS RESULTADOS
 ===================================================== */
 
 export async function obtenerUltimosResultados() {
@@ -428,74 +291,117 @@ export async function obtenerUltimosResultados() {
   /*
    * Buscamos hasta 10 días hacia atrás.
    *
-   * Esto permite que si todavía no salió el sorteo de hoy,
-   * se muestre automáticamente el último publicado.
+   * Si hoy todavía no publicó un resultado,
+   * seguimos buscando hasta encontrar el último
+   * resultado oficial disponible.
    */
 
-  for (let offset = 0; offset < 10; offset++) {
+  for (
+    let offset = 0;
+    offset < 10;
+    offset++
+  ) {
 
     try {
 
-      const resultado = await obtenerResultadoDia(
-        offset === 0
-          ? undefined
-          : fechaAnterior(hoy, offset),
-      )
+      const resultado =
+        await obtenerResultadoDia(
+          offset === 0
+            ? undefined
+            : fechaAnterior(
+                hoy,
+                offset,
+              ),
+        )
 
-      if (!resultado) continue
+      if (!resultado) {
+        continue
+      }
 
-      /*
-       * VESPERTINA
-       */
+      /* =================================================
+         QUINIELA VESPERTINA
+      ================================================= */
 
       if (
         !vespertina.premios.length &&
         resultado.quinielaVespertina.length
       ) {
+
         vespertina = {
-          fecha: resultado.fechaVespertina,
-          premios: resultado.quinielaVespertina,
+          fecha:
+            resultado.fechaVespertina,
+
+          premios:
+            resultado.quinielaVespertina,
         }
       }
+
+      /* =================================================
+         TÓMBOLA VESPERTINA
+      ================================================= */
 
       if (
         !tombolaVespertina.numeros.length &&
         resultado.tombolaVespertina.length >= 20
       ) {
+
         tombolaVespertina = {
-          fecha: resultado.fechaVespertina,
-          numeros: resultado.tombolaVespertina.slice(0, 20),
+
+          fecha:
+            resultado.fechaVespertina,
+
+          numeros:
+            resultado.tombolaVespertina.slice(
+              0,
+              20,
+            ),
         }
       }
 
-      /*
-       * NOCTURNA
-       */
+      /* =================================================
+         QUINIELA NOCTURNA
+      ================================================= */
 
       if (
         !nocturna.premios.length &&
         resultado.quinielaNocturna.length
       ) {
+
         nocturna = {
-          fecha: resultado.fechaNocturna,
-          premios: resultado.quinielaNocturna,
+
+          fecha:
+            resultado.fechaNocturna,
+
+          premios:
+            resultado.quinielaNocturna,
         }
       }
+
+      /* =================================================
+         TÓMBOLA NOCTURNA
+      ================================================= */
 
       if (
         !tombolaNocturna.numeros.length &&
         resultado.tombolaNocturna.length >= 20
       ) {
+
         tombolaNocturna = {
-          fecha: resultado.fechaNocturna,
-          numeros: resultado.tombolaNocturna.slice(0, 20),
+
+          fecha:
+            resultado.fechaNocturna,
+
+          numeros:
+            resultado.tombolaNocturna.slice(
+              0,
+              20,
+            ),
         }
       }
 
-      /*
-       * Cuando tenemos los cuatro resultados completos,
-       * dejamos de consultar días anteriores.
-       */
+      /* =================================================
+         SI TENEMOS TODO, TERMINAMOS
+      ================================================= */
 
       if (
         vespertina.premios.length >= 20 &&
@@ -503,6 +409,7 @@ export async function obtenerUltimosResultados() {
         tombolaVespertina.numeros.length >= 20 &&
         tombolaNocturna.numeros.length >= 20
       ) {
+
         break
       }
 
@@ -512,37 +419,61 @@ export async function obtenerUltimosResultados() {
         'Error consultando DNLQ:',
         error,
       )
-
     }
   }
 
-  /*
-   * =====================================================
-   * DEVOLVEMOS SOLO RESULTADOS ENCONTRADOS
-   *
-   * No inventamos números.
-   * =====================================================
-   */
+  /* =====================================================
+     RESULTADO FINAL
+  ===================================================== */
 
   return {
+
     vespertina: {
-      fecha: vespertina.fecha,
-      premios: vespertina.premios.slice(0, 20),
+
+      fecha:
+        vespertina.fecha,
+
+      premios:
+        vespertina.premios.slice(
+          0,
+          20,
+        ),
     },
 
     nocturna: {
-      fecha: nocturna.fecha,
-      premios: nocturna.premios.slice(0, 20),
+
+      fecha:
+        nocturna.fecha,
+
+      premios:
+        nocturna.premios.slice(
+          0,
+          20,
+        ),
     },
 
     tombolaVespertina: {
-      fecha: tombolaVespertina.fecha,
-      numeros: tombolaVespertina.numeros.slice(0, 20),
+
+      fecha:
+        tombolaVespertina.fecha,
+
+      numeros:
+        tombolaVespertina.numeros.slice(
+          0,
+          20,
+        ),
     },
 
     tombolaNocturna: {
-      fecha: tombolaNocturna.fecha,
-      numeros: tombolaNocturna.numeros.slice(0, 20),
+
+      fecha:
+        tombolaNocturna.fecha,
+
+      numeros:
+        tombolaNocturna.numeros.slice(
+          0,
+          20,
+        ),
     },
   }
 }
